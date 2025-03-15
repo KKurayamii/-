@@ -1,0 +1,141 @@
+{% extends 'base_docter.html' %}
+{% block content %}
+
+    <div class="container mt-4">
+        <h2 class="mb-4">แดชบอร์ดบุคลากรทางการแพทย์</h2>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-lg p-3 mb-4 bg-white rounded">
+                    <div class="card-body">
+                        <h5 class="card-title">จำนวนสมาชิกทั้งหมด</h5>
+                        <p class="card-text">{{ total_users }} คน</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-lg p-3 mb-4 bg-white rounded">
+                    <div class="card-body">
+                        <h5 class="card-title">จำนวนบทความสุขภาพ</h5>
+                        <p class="card-text">{{ total_articles }} บทความ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-lg p-3 mb-4 bg-white rounded">
+                    <div class="card-body">
+                        <h5 class="card-title">จำนวนวินิจฉัยทั้งหมด</h5>
+                        <p class="card-text">{{ total_diagnoses }} รายการ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphs Section -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg p-3 mb-4 bg-white rounded">
+                    <div class="card-body">
+                        <h5 class="card-title">กราฟการวินิจฉัย</h5>
+                        <canvas id="diagnosisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-lg p-3 mb-4 bg-white rounded">
+                    <div class="card-body">
+                        <h5 class="card-title">กราฟการเสี่ยงตามกลุ่มอายุ</h5>
+                        <canvas id="ageRiskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <h1>นัยยะสำคัญของการวินิจฉัยจากโมเดล</h1>
+
+   {% if feature_image_base64 %}
+    <img src="data:image/png;base64,{{ feature_image_base64 }}" alt="Feature Importance Graph">
+{% else %}
+    <p>Error: Unable to display image</p>
+{% endif %}
+
+    <p>อัพเดตโมเดลวันที่: {{ uploaded_at }}</p>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+        // ดึงข้อมูลจาก context ใน Django ที่ส่งมา
+        let diagnosisLabels = {{ diagnosis_labels|safe }};
+        let diagnosisCounts = {{ diagnosis_counts|safe }};
+        let ageLabels = {{ age_labels|safe }};
+        let ageRiskCounts = {{ age_risk_counts|safe }};
+        let ageNoRiskCounts = {{ age_no_risk_counts|safe }};
+
+        // สร้างกราฟโดนัท
+        var ctx = document.getElementById('diagnosisChart').getContext('2d');
+        var diagnosisChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: diagnosisLabels,
+                datasets: [{
+                    data: diagnosisCounts,
+                    backgroundColor: ['#FF0000','#008000']
+                }]
+            },
+             options: {
+            responsive: true,
+            onClick: function(event, elements) {
+                if (elements.length > 0) {
+                    var index = elements[0].index; // หา index ที่คลิก
+                    if (index === 0) {
+                        window.location.href = "{% url 'risk_info' %}";  // ลิงค์ไปยังข้อมูลเสี่ยง
+                    } else if (index === 1) {
+                        window.location.href = "{% url 'no_risk_info' %}";  // ลิงค์ไปยังข้อมูลไม่เสี่ยง
+                    }
+                }
+            }
+        }
+        });
+
+        // สร้างกราฟอายุ
+        // สร้างกราฟแยกช่วงอายุและเสี่ยง-ไม่เสี่ยง
+    var ctx2 = document.getElementById('ageRiskChart').getContext('2d');
+    var ageRiskChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ageLabels,  // ช่วงอายุ
+            datasets: [
+                {
+                    label: 'เสี่ยง',
+                    data: ageRiskCounts,  // จำนวนเสี่ยง
+                    backgroundColor: 'rgb(255,0,0)',  // สีของข้อมูลเสี่ยง
+                },
+                {
+                    label: 'ไม่เสี่ยง',
+                    data: ageNoRiskCounts,  // จำนวนไม่เสี่ยง
+                    backgroundColor: 'rgb(0,128,0)',  // สีของข้อมูลไม่เสี่ยง
+                }
+            ]
+        },
+          options: {
+        responsive: true,
+        scales: {
+            x: { stacked: true },
+            y: { stacked: true, beginAtZero: true }
+        },
+         onClick: function(event, elements) {
+            if (elements.length > 0) {
+                var index = elements[0].index;  // หา index ของช่วงอายุที่คลิก
+                var category = elements[0].datasetIndex === 0 ? 'เสี่ยง' : 'ไม่เสี่ยง';  // แยกประเภทเสี่ยงและไม่เสี่ยง
+
+                // สร้าง URL สำหรับ redirect โดยใช้ URL ที่มี age_category และ risk_category
+                var url = "/age-category/" + ageLabels[index].toLowerCase().replace(/\s+/g, '-') + '-' + category;
+                window.location.href = url;  // ไปยัง URL ที่สร้างขึ้น
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
+

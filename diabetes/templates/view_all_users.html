@@ -1,0 +1,30 @@
+<h1>All Registered Users</h1>
+
+<table border="1">
+    <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <td>First name</td>
+        <td>Last name</td>
+        <td>Sex</td>
+        <th>Joined Date</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.sex }}</td>
+        <td>{{ user.date_joined }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">No registered users found</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'manage_users' %}">Back to Manage Users</a>

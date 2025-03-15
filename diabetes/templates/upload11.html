@@ -1,0 +1,68 @@
+{% extends 'base_docter.html' %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อัพโหลดไฟล์</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #004AAD;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #003688;
+        }
+        p.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+   <center><h2>วินิจฉัยแบบกลุ่ม</h2></center>
+    <center><small>การอัพโหลดไฟล์ต้องเป็นสกุล Csv/Xlsx</small></center>
+   <u>
+    <center><small>โดยที่ควรมีตัวแปรในชุดข้อมูล เช่น Name,Address,Phone,Gender,Age,Pregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI และ DiabetesPedigreeFunction สำหรับการวินิจฉัยแบบกลุ่ม</small></center>
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" required>
+        <input type="hidden" name="model" value="rf">
+        <button type="submit">อัพโหลดและวินิจฉัย</button>
+    </form>
+</body>
+</html>
+
+     {% endblock %}

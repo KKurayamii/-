@@ -1,0 +1,25 @@
+<form method="post" action="{% url 'result_t' %}">
+    {% csrf_token %}
+    <input type="hidden" name="health_record1_id" value="{{ record.id }}">
+
+    <div class="form-group">
+        <label>Pregnancies:</label>
+        <select name="Pregnancies">
+            <option value="0">Low Risk</option>
+            <option value="1">Moderate Risk</option>
+            <option value="2">High Risk</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Blood Pressure:</label>
+        <select name="BloodPressure">
+            <option value="0">Low</option>
+            <option value="1">Normal</option>
+            <option value="2">Elevated</option>
+            <option value="3">Hypertension Stage 1</option>
+            <option value="4">Hypertension Stage 2</option>
+            <option value="5">Hypertensive Crisis</option>
+        </select>
+    </div>
+    <button type="submit" class="submit-btn">วินิจฉัย</button>
+</form>

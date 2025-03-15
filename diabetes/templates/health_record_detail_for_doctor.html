@@ -1,0 +1,12 @@
+
+{% block content %}
+  <h1>Health Record for {{ record.user.username }}</h1>
+  <p><strong>Blood Pressure:</strong> {{ record.blood_pressure }}</p>
+  <p><strong>Weight:</strong> {{ record.weight }}</p>
+  <p><strong>Height:</strong> {{ record.height }}</p>
+  <p><strong>BMI:</strong> {{ record.bmi }}</p>
+  <p><strong>Insulin:</strong> {{ record.insulin }}</p>
+  <p><strong>Fasting Blood Sugar:</strong> {{ record.fasting_blood_sugar }}</p>
+  <p><strong>Last Visit:</strong> {{ record.last_visit_date }}</p>
+  <a href="{% url 'health_record_for_doctor' %}">Back to Records List</a>
+{% endblock %}

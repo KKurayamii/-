@@ -1,0 +1,90 @@
+<form method="POST" enctype="multipart/form-data" class="upload-form">
+    {% csrf_token %}
+
+    <div class="file-upload-wrapper">
+        <input type="file" name="file" id="file-input" class="file-input" />
+        <label for="file-input" class="file-label">
+            📂 เลือกไฟล์หรือลากไฟล์มาวางที่นี่
+        </label>
+    </div>
+
+    <button type="submit" class="upload-btn"> Upload</button>
+</form>
+
+<style>
+    .upload-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+    }
+
+    /* กล่องอัปโหลด */
+    .file-upload-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        border: 2px dashed #004AAD;
+        border-radius: 8px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .file-upload-wrapper:hover {
+        background: #f0fdf4;
+    }
+
+    /* ซ่อนอินพุต */
+    .file-input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-label {
+        font-size: 16px;
+        color: #004AAD;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    /* ปุ่ม Upload */
+    .upload-btn {
+        background: #004AAD;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .upload-btn:hover {
+        background: #5ED0E6;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .file-upload-wrapper {
+            padding: 15px;
+            font-size: 14px;
+        }
+        .upload-btn {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+    }
+</style>

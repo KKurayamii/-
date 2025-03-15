@@ -1,0 +1,495 @@
+{% extends 'base_user.html' %}
+
+{% block title %}Dashboard - My App{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+        <style>
+    .health-summary {
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .health-summary:hover {
+        background-color: #e2e6ea;
+        transform: scale(1.05);
+    }
+
+    .health-summary p {
+        transition: color 0.3s ease;
+    }
+
+    .health-summary:hover p {
+        color: #007bff;
+    }
+     .article-card {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .article-card:hover {
+        transform: translateY(-10px); /* ยกการ์ดขึ้นเมื่อ hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .article-card h3 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #343a40; /* สีข้อความเข้ม */
+    }
+
+    .article-card p {
+        font-size: 1rem;
+        color: #6c757d; /* สีข้อความรอง */
+    }
+
+    .article-card a {
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    /* ปรับให้ปุ่มมีเอฟเฟกต์เมื่อ hover */
+    .article-card a:hover {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+
+
+        <!-- Health Record Section -->
+        <div class="card shadow-lg mb-4 rounded border-0">
+            <div class="card-body">
+                <h2 class="h4 text-primary">ข้อมูลสุขภาพประจำวันที่ {{ health_record1.date_recorded }}</h2>
+
+                {% if health_record_today %}
+                    <div class="health-record">
+                        <p><strong>Fasting Blood Glucose:</strong>
+                            <span class="{% if health_record_today.fasting_blood_sugar > 140 %}text-danger{% else %}text-success{% endif %}">
+                                {{ health_record_today.fasting_blood_sugar }} mg/dL
+                            </span>
+                        </p>
+                        <p><strong>Postprandial Blood Glucose:</strong>
+                            <span class="{% if health_record_today.postprandial_blood_sugar > 200 %}text-danger{% else %}text-success{% endif %}">
+                                {{ health_record_today.postprandial_blood_sugar }} mg/dL
+                            </span>
+                        </p>
+                        <p><strong>Insulin Level:</strong>
+                            <span class="{% if health_record1.insulin > 25 %}text-danger{% else %}text-success{% endif %}">
+                                {{ health_record_today.insulin }} U/mL
+                            </span>
+                        </p>
+                        <p><strong>BMI:</strong>
+                            <span class="{% if health_record1.bmi > 30 %}text-danger{% else %}text-success{% endif %}">
+                                {{ health_record_today.bmi }}
+                            </span>
+                        </p>
+
+                        <!-- Risk Notifications -->
+                        {% if health_record_today.fasting_blood_sugar > 140 %}
+                            <div class="alert alert-warning">⚠️ ระดับน้ำตาลสูงกว่าปกติ!</div>
+                        {% endif %}
+                        {% if health_record_today.postprandial_blood_sugar > 200 %}
+                            <div class="alert alert-warning">⚠️ ระดับน้ำตาลหลังอาหารสูงกว่าปกติ!</div>
+                        {% endif %}
+                        {% if health_record_today.insulin > 25 %}
+                            <div class="alert alert-warning">⚠️ ระดับอินซูลินสูงกว่าปกติ!</div>
+                        {% endif %}
+                        {% if health_record_today.bmi > 30 %}
+                            <div class="alert alert-warning">⚠️ BMI สูงกว่าปกติ!</div>
+                        {% endif %}
+                    </div>
+                    <!-- Example Link to Another Page -->
+                    <div class="mt-4">
+                        <a href="{% url 'health_record1' %}" class="btn btn-primary btn-lg w-100">ไปที่หน้ารายละเอียดสุขภาพเพิ่มเติม</a>
+                    </div>
+
+                {% else %}
+                    <p>ไม่มีข้อมูลสุขภาพวันนี้</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Dashboard Information -->
+        <div class="row mb-4">
+            <!-- Weight, Height, BMI Card -->
+            <div class="col-md-4">
+                <div class="card shadow-lg border-0 rounded">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">น้ำหนัก, ส่วนสูง, BMI</h5>
+
+                        {% if health_record1 %}
+                            <p>น้ำหนัก: <span class="highlight">{{ health_record1.weight }} กก.</span></p>
+                            <p>ส่วนสูง: <span class="highlight">{{ health_record1.height }} ซม.</span></p>
+                            <p>BMI: <span class="highlight">{{ health_record1.bmi }}</span></p>
+
+                            {% if health_record1.bmi < 18.5 %}
+                                <div class="alert alert-danger">⚠️ น้ำหนักน้อยเกินไป (BMI ต่ำกว่า 18.5)</div>
+                            {% elif health_record1.bmi >= 18.5 and health_record1.bmi < 25 %}
+                                <div class="alert alert-success">✅ น้ำหนักปกติ</div>
+                            {% elif health_record1.bmi >= 25 and health_record1.bmi < 30 %}
+                                <div class="alert alert-warning">⚠️ น้ำหนักเกิน (BMI 25-29.9)</div>
+                            {% else %}
+                                <div class="alert alert-danger">⚠️ อ้วน (BMI 30 หรือมากกว่า)</div>
+                            {% endif %}
+
+                            <!-- BMI Progress Chart -->
+                            <canvas id="bmiProgressChart" width="400" height="400"></canvas>
+
+                        {% else %}
+                            <p>ไม่มีข้อมูลที่บันทึก</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Sugar Cards with Pie Chart -->
+            <div class="col-md-4">
+                <div class="card shadow-lg border-0 rounded">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">ระดับน้ำตาลในเลือด</h5>
+
+                        {% if health_record1 %}
+                            <p>ก่อนอาหาร: <span class="highlight">{{ health_record1.fasting_blood_sugar }} mg/dL</span></p>
+                            {% if health_record1.fasting_blood_sugar < 70 %}
+                                <div class="alert alert-danger">⚠️ น้ำตาลในเลือดต่ำ</div>
+                            {% elif health_record1.fasting_blood_sugar >= 70 and health_record1.fasting_blood_sugar <= 100 %}
+                                <div class="alert alert-success">✅ น้ำตาลในเลือดปกติ</div>
+                            {% else %}
+                                <div class="alert alert-warning">⚠️ น้ำตาลสูงกว่าปกติ</div>
+                            {% endif %}
+
+                              <!-- น้ำตาลหลังอาหาร -->
+                <p>หลังอาหาร: <span class="highlight">{{ health_record1.postprandial_blood_sugar }} mg/dL</span></p>
+                {% if health_record1.postprandial_blood_sugar < 70 %}
+                    <div class="alert alert-danger">⚠️ น้ำตาลหลังอาหารต่ำ</div>
+                {% elif health_record1.postprandial_blood_sugar < 140 %}
+                    <div class="alert alert-success">✅ น้ำตาลหลังอาหารปกติ</div>
+                {% elif health_record1.postprandial_blood_sugar >= 140 and health_record1.postprandial_blood_sugar <= 180 %}
+                    <div class="alert alert-warning">⚠️ น้ำตาลหลังอาหารสูงกว่าปกติ</div>
+                {% else %}
+                    <div class="alert alert-danger">⚠️ น้ำตาลหลังอาหารสูงมาก</div>
+                {% endif %}
+
+                            <!-- Blood Sugar Pie Chart -->
+                            <canvas id="bloodSugarPieChart" width="400" height="400"></canvas>
+                        {% else %}
+                            <p>ไม่มีข้อมูลที่บันทึก</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Pressure Card -->
+            <div class="col-md-4">
+                <div class="card shadow-lg border-0 rounded">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">ความดันโลหิต (DBP)</h5>
+                        {% if health_record1.blood_pressure %}
+                            <p>ความดันโลหิต: <span class="highlight">{{ health_record1.blood_pressure }} mmHg</span></p>
+                            {% if health_record1.blood_pressure < 60 %}
+                                <div class="alert alert-danger">⚠️ ความดันโลหิตต่ำ</div>
+                            {% elif health_record1.blood_pressure >= 60 and health_record1.blood_pressure <= 80 %}
+                                <div class="alert alert-success">✅ ความดันโลหิตปกติ</div>
+                            {% else %}
+                                <div class="alert alert-warning">⚠️ ความดันโลหิตสูง</div>
+                            {% endif %}
+
+                            <!-- Blood Pressure Chart -->
+                            <canvas id="bloodPressureChart" width="400" height="400"></canvas>
+                        {% else %}
+                            <p>ไม่มีข้อมูลที่บันทึก</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Articles Section -->
+<div class="articles-section mt-5">
+    <h2 class="text-primary text-center mb-4">บทความที่แนะนำ</h2>
+    <div class="row">
+        {% for article in articles %}
+            <div class="col-md-4 mb-4">
+                <div class="article-card shadow-lg rounded border border-light p-4"
+                     style="background-color: #f8f9fa; transition: transform 0.3s ease;">
+
+                    {% if article.image %}
+                        <img src="{{ article.image.url }}" alt="{{ article.title }}" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover;">
+                    {% endif %}
+
+                    <h3 class="text-dark font-weight-bold" style="font-size: 1.2rem;">{{ article.title }}</h3>
+                    <p>{{ article.content|truncatewords:2.5 }}</p>  <!-- แสดงแค่ 30 คำ -->
+                    <a href="{% url 'view_article' article.id %}" class="btn btn-outline-primary">อ่านเพิ่มเติม</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">ไม่มีบทความที่พร้อมในขณะนี้</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    // ข้อมูลน้ำตาลในเลือด
+    const fastingBloodSugar = {{ health_record1.fasting_blood_sugar }};
+    const postprandialBloodSugar = {{ health_record1.postprandial_blood_sugar }};
+    const bmi = {{ health_record1.bmi }};
+    const bloodPressure = {{ health_record1.blood_pressure }};
+
+    // กำหนดเกณฑ์ระดับน้ำตาล
+    const sugarLevels = {
+        low: 70,
+        normalLow: 70,
+        normalHigh: 100,
+        high: 140
+    };
+
+    // ฟังก์ชันวิเคราะห์ระดับน้ำตาล
+    function analyzeBloodSugar(value) {
+        if (value < sugarLevels.low) return 'ต่ำ';
+        if (value >= sugarLevels.low && value <= sugarLevels.normalHigh) return 'ปกติ';
+        return 'สูง';
+    }
+
+    // ข้อมูลในกราฟวงกลม
+    const sugarLabels = ['น้ำตาลก่อนอาหาร', 'น้ำตาลหลังอาหาร'];
+    const sugarData = [fastingBloodSugar, postprandialBloodSugar];
+    const sugarStatus = [analyzeBloodSugar(fastingBloodSugar), analyzeBloodSugar(postprandialBloodSugar)];
+
+    const ctxBloodSugar = document.getElementById('bloodSugarPieChart').getContext('2d');
+    const bloodSugarPieChart = new Chart(ctxBloodSugar, {
+        type: 'pie',
+        data: {
+            labels: sugarLabels,
+            datasets: [{
+                data: sugarData,
+                backgroundColor: ['green', 'red'],
+                hoverBackgroundColor: ['darkgreen', 'darkred']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'การวิเคราะห์ระดับน้ำตาลในเลือด'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const index = tooltipItem.dataIndex;
+                            const label = tooltipItem.label;
+                            const value = tooltipItem.raw;
+                            const status = sugarStatus[index] !== undefined ? sugarStatus[index] : "ไม่ระบุ";
+                            return `${label}: ${value} mg/dL (${status})`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('bmiProgressChart').getContext('2d');
+
+        // ดึงข้อมูล BMI และ วันที่จาก Django
+        var bmiValues = {{ bmi_values|safe }};
+        var bmiDates = {{ bmi_dates|safe }};
+
+        var bmiChart = new Chart(ctx, {
+            type: 'line', // ใช้ line chart สำหรับแสดงแนวโน้มของ BMI
+            data: {
+                labels: bmiDates, // วันที่ของแต่ละค่าที่บันทึก
+                datasets: [{
+                    label: 'BMI Progress',
+                    data: bmiValues,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // สีพื้นหลังของเส้น
+                    borderColor: 'rgba(54, 162, 235, 1)', // สีของเส้นกราฟ
+                    borderWidth: 2,
+                    fill: true, // ให้เส้นมีสีด้านล่าง
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)', // จุดข้อมูลเป็นสีแดง
+                    pointBorderColor: 'rgba(255, 99, 132, 1)',
+                    pointRadius: 5, // ขนาดของจุด
+                    pointHoverRadius: 7 // ขนาดของจุดเมื่อ hover
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return "BMI: " + tooltipItem.raw.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: "BMI Value"
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Date"
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+document.addEventListener("DOMContentLoaded", function () {
+    var ctx = document.getElementById('bloodPressureChart').getContext('2d');
+
+    // ดึงข้อมูลจาก Django (ค่าความดันและวันที่)
+    var bloodPressureValues = {{ blood_pressure_values|safe }};
+    var bloodPressureDates = {{ blood_pressure_dates|safe }};
+
+    var bloodPressureChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: bloodPressureDates, // วันที่ของค่าความดันโลหิตที่บันทึก
+            datasets: [{
+                label: 'ค่าความดันโลหิต (mmHg)',
+                data: bloodPressureValues,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)', // สีพื้นหลัง
+                borderColor: 'rgba(255, 99, 132, 1)', // สีของเส้นกราฟ
+                borderWidth: 2,
+                fill: true,
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)', // จุดข้อมูลเป็นสีฟ้า
+                pointBorderColor: 'rgba(75, 192, 192, 1)',
+                pointRadius: 5, // ขนาดของจุด
+                pointHoverRadius: 7 // ขนาดของจุดเมื่อ hover
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return "ความดันโลหิต: " + tooltipItem.raw.toFixed(2) + " mmHg";
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: "ค่าความดันโลหิต (mmHg)"
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "วันที่บันทึก"
+                    }
+                }
+            }
+        }
+    });
+});
+
+ // ดึงข้อมูลไขมันในเลือดจาก Django
+    const triglyceridesValues = {{ triglycerides_values|safe }};
+    const cholesterolValues = {{ cholesterol_values|safe }};
+    const hdlValues = {{ hdl_values|safe }};
+    const ldlValues = {{ ldl_values|safe }};
+    const recordDates = {{ record_dates|safe }};
+
+    // กำหนดค่ามาตรฐานแนะนำ (values in mg/dL)
+    const standardValues = {
+        triglycerides: 150,  // Triglycerides < 150 mg/dL
+        cholesterol: 200,    // Cholesterol < 200 mg/dL
+        hdl: 40,             // HDL > 40 mg/dL
+        ldl: 100             // LDL < 100 mg/dL
+    };
+
+    // สร้างกราฟแท่งสำหรับแสดงผล
+    var ctx = document.getElementById('bloodFatsChart').getContext('2d');
+    var bloodFatsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: recordDates,
+            datasets: [{
+                label: 'Triglycerides',
+                data: triglyceridesValues,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Cholesterol',
+                data: cholesterolValues,
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+            }, {
+                label: 'HDL',
+                data: hdlValues,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }, {
+                label: 'LDL',
+                data: ldlValues,
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'ระดับ (mg/dL)'
+                    },
+                    ticks: {
+                        min: 0,
+                        max: 300,
+                        stepSize: 50
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            const value = tooltipItem.raw;
+                            const datasetLabel = tooltipItem.dataset.label;
+                            const standardValue = standardValues[datasetLabel.toLowerCase()];
+                            let status = value <= standardValue ? 'ปกติ' : 'สูงเกิน';
+                            return `${datasetLabel}: ${value} mg/dL (${status})`;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'การตรวจสอบไขมันในเลือด'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

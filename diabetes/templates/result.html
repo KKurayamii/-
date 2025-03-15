@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลการวิเคราะห์</title>
+    <style>
+        /* Basic styling for the navbar */
+        .navbar {
+            position: relative;
+            background-color: #5ED0E6;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: black;
+            text-decoration: none;
+            padding: 8px 16px;
+            display: block;
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            width: 150px;
+            padding: 10px 0;
+        }
+
+        .dropdown a {
+            text-align: left;
+        }
+
+        .dropdown a:hover {
+            background-color: #5ED0E6;
+        }
+
+        .navbar:hover .dropdown {
+            display: block;
+        }
+
+        /* Centering text for analysis results */
+        .content {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+    </style>
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'dashboard' %}">Home</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+
+    <!-- Analysis Result -->
+    <div class="content">
+        {% if result %}
+            <h3>ผลการวิเคราะห์จากแต่ละโมเดล</h3>
+            <ul>
+                {% for model, prediction in result.items %}
+                    <li>{{ model }}: {{ prediction }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>ไม่สามารถทำนายได้ โปรดลองใหม่อีกครั้ง</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

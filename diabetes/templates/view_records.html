@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Health Records</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Your Health Records</h1>
+    </div>
+
+    <!-- Blood Sugar Trend Graph -->
+    <div class="container">
+        <canvas id="bloodSugarChart" width="400" height="200"></canvas>
+        <script>
+            var bloodSugarData = JSON.parse('{{ blood_sugar_data|escapejs }}');
+
+            var ctx = document.getElementById('bloodSugarChart').getContext('2d');
+            var bloodSugarChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: bloodSugarData.dates,
+                    datasets: [{
+                        label: 'Fasting Blood Sugar (mg/dL)',
+                        data: bloodSugarData.values,
+                        borderColor: '#5ED0E6',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        </script>
+    </div>
+
+    <!-- Health Records Table -->
+    <div class="container">
+        <h2>Health Records</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Blood Pressure</th>
+                    <th>Weight</th>
+                    <th>Height</th>
+                    <th>BMI</th>
+                    <th>Insulin</th>
+                    <th>Fasting Blood Sugar</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.date_created|date:"Y-m-d H:i" }}</td>
+                    <td>{{ record.blood_pressure }}</td>
+                    <td>{{ record.weight }}</td>
+                    <td>{{ record.height }}</td>
+                    <td>{{ record.bmi }}</td>
+                    <td>{{ record.insulin }}</td>
+                    <td>{{ record.fasting_blood_sugar }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>

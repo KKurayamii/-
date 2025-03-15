@@ -1,0 +1,33 @@
+{% block content %}
+  <div style="max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; color: #333;">Health Record - {{ record.user.username }}</h1>
+
+    <div style="margin-bottom: 15px;">
+      <p><strong>Blood Pressure:</strong> {{ record.blood_pressure }}</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p><strong>Weight:</strong> {{ record.weight }}</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p><strong>Height:</strong> {{ record.height }}</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p><strong>BMI:</strong> {{ record.bmi }}</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p><strong>Insulin:</strong> {{ record.insulin }}</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p><strong>Fasting Blood Sugar:</strong> {{ record.fasting_blood_sugar }}</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p><strong>Last Visit:</strong> {{ record.last_visit_date }}</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="{% url 'health_record_edit_admin' record.id %}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 0 10px;">Edit</a>
+      <a href="{% url 'health_record_delete_admin' record.id %}" style="padding: 10px 20px; background-color: #F44336; color: white; text-decoration: none; border-radius: 5px; margin: 0 10px;">Delete</a>
+    </div>
+  </div>
+{% endblock %}
+

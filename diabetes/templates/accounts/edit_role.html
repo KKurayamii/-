@@ -1,0 +1,11 @@
+<!-- edit_role.html -->
+<h2>แก้ไขบทบาทของ {{ user.username }}</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label for="role">เลือกบทบาท:</label>
+    <select name="role">
+        <option value="member" {% if 'Member' in user.groups.all.values_list('name', flat=True) %}selected{% endif %}>Member</option>
+        <option value="medical_officer" {% if 'Medical Officer' in user.groups.all.values_list('name', flat=True) %}selected{% endif %}>Medical Officer</option>
+    </select>
+    <button type="submit">บันทึกการเปลี่ยนแปลง</button>
+</form>

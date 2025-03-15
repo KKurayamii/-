@@ -1,0 +1,22 @@
+{% block content %}
+  <div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; color: #333;">คุณแน่ใจใช่ไหมว่าจะลบ?</h1>
+    <div style="margin-bottom: 20px;">
+      <p><strong>User:</strong> {{ record.user.username }}</p>
+      <p><strong>Last Visit:</strong> {{ record.last_visit_date }}</p>
+    </div>
+
+    <form method="POST" style="text-align: center;">
+      {% csrf_token %}
+      <button type="submit" style="padding: 10px 20px; background-color: #F44336; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 0 15px;">
+        Yes, delete
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="{% url 'health_record_list_admin' %}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+        Cancel
+      </a>
+    </div>
+  </div>
+{% endblock %}

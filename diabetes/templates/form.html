@@ -1,0 +1,6 @@
+<form method="POST">
+    {% csrf_token %}
+    <label for="notify_time">เลือกวันที่แจ้งเตือน:</label>
+    <input type="text" id="notify_time" name="notify_time" class="datetimepicker" required>
+    <button type="submit">บันทึก</button>
+</form>

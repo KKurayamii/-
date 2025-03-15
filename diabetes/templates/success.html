@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #5ED0E6;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            display: none;
+            flex-direction: column;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .navbar:hover .dropdown {
+            display: flex;
+        }
+
+        /* Profile Icon (Move to the right) */
+        .profile-icon {
+            margin-left: auto;  /* Move to the right */
+            cursor: pointer;
+        }
+
+        .profile-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        /* Success Message Container */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h1 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .container p {
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        /* Button Styling */
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 16px;
+            background-color: #004AAD;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #5ED0E6;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="#">Home</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+            <a href="{% url 'view_health_records' %}">Records</a>
+        </div>
+        <!-- Profile Icon moved to the right -->
+        <div class="profile-icon" onclick="location.href='{% url 'profile' %}'">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture">
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="container">
+        <h1>Health Data Saved Successfully!</h1>
+        <p>Your health data has been successfully saved. You can now review or update your data at any time.</p>
+
+        <!-- Button to go back to dashboard or any other page -->
+        <a href="{% url 'dashboard' %}" class="button">Go to Home</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อัปโหลดโมเดล</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .upload-container {
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 50%;
+            margin: auto;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 10px 0;
+        }
+        .submit-button {
+            display: block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #004AAD;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .submit-button:hover {
+            background-color: #5ED0E6;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>อัปโหลดโมเดลใหม่</h1>
+
+    <div class="upload-container">
+        <form action="{% url 'upload_model' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="model_file">เลือกไฟล์โมเดล (.pkl):</label>
+            <input type="file" name="model_file" id="model_file" required>
+            <button type="submit" class="submit-button">อัปโหลดโมเดล</button>
+        </form>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

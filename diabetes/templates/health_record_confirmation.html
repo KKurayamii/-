@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Record - Confirmation</title>
+</head>
+<body>
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    </div>
+    <h1>Health Record</h1>
+    <p>Your health data has been successfully saved!</p>
+    <button onclick="location.href='{% url 'health_record_history' %}'">View History</button>
+    <button onclick="location.href='{% url 'dashboard' %}'">Back to Dashboard</button>
+</body>
+</html>

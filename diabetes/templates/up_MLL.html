@@ -1,0 +1,22 @@
+<!-- model_uploaded.html -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลการอัปโหลดโมเดล</title>
+</head>
+<body>
+    <h1>ผลการอัปโหลดโมเดล</h1>
+    <div class="message-container">
+        <p>{{ message }}</p>
+    </div>
+
+    <!-- แสดงเวลาอัปเดต -->
+    <div class="update-time">
+        <p>เวลาอัปเดตโมเดลล่าสุด: {{ update_time }}</p>
+    </div>
+
+    <a href="{% url 'upload_model' %}">อัปโหลดโมเดลใหม่</a>
+</body>
+</html>

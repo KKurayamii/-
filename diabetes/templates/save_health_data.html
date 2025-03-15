@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Health Data</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="profile-icon" onclick="location.href='{% url 'profile' %}'">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture">
+            {% endif %}
+        </div>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="#">Home</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Save Health Data</h1>
+    </div>
+
+    <!-- Health Record Form -->
+    <div class="container">
+        <form method="POST" action="{% url 'save_health_data' %}">
+            {% csrf_token %}
+
+            <label for="blood_pressure">Blood Pressure:</label>
+            <input type="text" id="blood_pressure" name="blood_pressure" required><br><br>
+
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" name="weight" step="0.1" required><br><br>
+
+            <label for="height">Height (cm):</label>
+            <input type="number" id="height" name="height" step="0.1" required><br><br>
+
+            <label for="bmi">BMI:</label>
+            <input type="number" id="bmi" name="bmi" step="0.1" required><br><br>
+
+            <label for="insulin">Insulin:</label>
+            <input type="text" id="insulin" name="insulin"><br><br>
+
+            <label for="fasting_blood_sugar">Fasting Blood Sugar (mg/dL):</label>
+            <input type="number" id="fasting_blood_sugar" name="fasting_blood_sugar" step="0.1"><br><br>
+
+            <label for="postprandial_blood_sugar">Postprandial Blood Sugar (mg/dL):</label>
+            <input type="number" id="postprandial_blood_sugar" name="postprandial_blood_sugar" step="0.1"><br><br>
+
+            <label for="hba1c">HbA1c:</label>
+            <input type="number" id="hba1c" name="hba1c" step="0.1"><br><br>
+
+            <label for="bun">BUN:</label>
+            <input type="number" id="bun" name="bun" step="0.1"><br><br>
+
+            <label for="cr">Creatinine (Cr.):</label>
+            <input type="number" id="cr" name="cr" step="0.1"><br><br>
+
+            <label for="egfr">eGFR:</label>
+            <input type="number" id="egfr" name="egfr" step="0.1"><br><br>
+
+            <label for="cholesterol">Cholesterol:</label>
+            <input type="number" id="cholesterol" name="cholesterol" step="0.1"><br><br>
+
+            <label for="triglycerides">Triglycerides:</label>
+            <input type="number" id="triglycerides" name="triglycerides" step="0.1"><br><br>
+
+            <label for="hdl">HDL:</label>
+            <input type="number" id="hdl" name="hdl" step="0.1"><br><br>
+
+            <label for="ldl">LDL:</label>
+            <input type="number" id="ldl" name="ldl" step="0.1"><br><br>
+
+            <label for="albumin_in_urine">Albumin in Urine:</label>
+            <input type="number" id="albumin_in_urine" name="albumin_in_urine" step="0.1"><br><br>
+
+            <label for="diabetic_retinopathy_screening">Diabetic Retinopathy Screening:</label>
+            <input type="checkbox" id="diabetic_retinopathy_screening" name="diabetic_retinopathy_screening"><br><br>
+
+            <label for="diabetic_foot_screening">Diabetic Foot Screening:</label>
+            <input type="checkbox" id="diabetic_foot_screening" name="diabetic_foot_screening"><br><br>
+
+            <label for="ekg">EKG:</label>
+            <input type="file" id="ekg" name="ekg"><br><br>
+
+            <label for="chest_x_ray">Chest X-Ray:</label>
+            <input type="file" id="chest_x_ray" name="chest_x_ray"><br><br>
+
+            <button type="submit">Save Health Data</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>

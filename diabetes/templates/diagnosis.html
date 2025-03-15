@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตรวจสอบความเสี่ยง</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-lg bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-center text-600 mb-6">ตรวจสอบความเสี่ยง</h2>
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <!-- Age Field -->
+                <div>
+                    <label for="id_age" class="block text-gray-700 font-medium mb-2">Age</label>
+                    <input type="number" id="id_age" name="age" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Enter your age">
+                </div>
+
+                <!-- Pregnancies Field -->
+                <div>
+                    <label for="id_pregnancies" class="block text-gray-700 font-medium mb-2">Pregnancies</label>
+                    <input type="number" id="id_pregnancies" name="pregnancies" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Number of pregnancies">
+                </div>
+
+                <!-- Glucose Field -->
+                <div>
+                    <label for="id_glucose" class="block text-gray-700 font-medium mb-2">Glucose</label>
+                    <input type="number" id="id_glucose" name="glucose" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Glucose level">
+                </div>
+
+                <!-- Blood Pressure Field -->
+                <div>
+                    <label for="id_blood_pressure" class="block text-gray-700 font-medium mb-2">Blood Pressure</label>
+                    <input type="number" id="id_blood_pressure" name="blood_pressure" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Blood pressure">
+                </div>
+
+                <!-- Insulin Field -->
+                <div>
+                    <label for="id_insulin" class="block text-gray-700 font-medium mb-2">Insulin</label>
+                    <input type="number" id="id_insulin" name="insulin" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Insulin level">
+                </div>
+
+                <!-- BMI Field -->
+                <div>
+                    <label for="id_bmi" class="block text-gray-700 font-medium mb-2">BMI</label>
+                    <input type="number" step="0.1" id="id_bmi" name="bmi" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="BMI">
+                </div>
+
+                <!-- HbA1c Field -->
+                <div>
+                    <label for="id_hba1c" class="block text-gray-700 font-medium mb-2">HbA1c</label>
+                    <input type="number" step="0.1" id="id_hba1c" name="hba1c" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="HbA1c level">
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit"
+                        class="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+                        ตรวจสอบความเสี่ยง
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มการแจ้งเตือน</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Montaga, sans-serif;
+            background: linear-gradient(to bottom, #5ED0E6, #004AAD);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #000;
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #004AAD;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #003080;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>เพิ่มการแจ้งเตือน</h1>
+        <form method="post" action="{% url 'add_notification' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">หัวข้อการแจ้งเตือน</label>
+                <input type="text" id="title" name="title" placeholder="กรอกหัวข้อการแจ้งเตือน" required>
+            </div>
+            <div class="form-group">
+                <label for="description">รายละเอียด</label>
+                <textarea id="description" name="description" rows="5" placeholder="กรอกรายละเอียดการแจ้งเตือน" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="member">เลือกสมาชิก</label>
+                <select id="member" name="member">
+                    {% for member in members %}
+                        <option value="{{ member.id }}">{{ member.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">วันที่</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">เวลา</label>
+                <input type="time" id="time" name="time" required>
+            </div>
+            <button type="submit" class="button">บันทึกการแจ้งเตือน</button>
+        </form>
+    </div>
+</body>
+</html>

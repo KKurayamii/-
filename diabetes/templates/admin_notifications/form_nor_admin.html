@@ -1,0 +1,15 @@
+<h2 style="text-align: center; color: #004AAD;">เพิ่ม/แก้ไขแจ้งเตือน</h2>
+
+<div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 15px;">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" style="background-color: #004AAD; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">บันทึก</button>
+    </form>
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'admin_notification_list' %}" style="color: #004AAD; text-decoration: none; font-size: 16px;">กลับสู่หน้าการแจ้งเตือน</a>
+</div>

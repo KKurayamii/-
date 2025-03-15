@@ -1,0 +1,91 @@
+{% block content %}
+    <div class="tabs">
+        <button class="tab" onclick="showTab('diagnose')">ทำนายโรคเบาหวาน</button>
+        <button class="tab" onclick="showTab('upload')">อัปโหลดไฟล์</button>
+    </div>
+
+    <!-- Tab: Diagnose -->
+    <div id="diagnose" class="tab-content">
+        <h2>ทำนายโรคเบาหวาน</h2>
+        <form method="POST" action="{% url 'diagnose_t' %}">
+            {% csrf_token %}
+            <!-- ฟอร์มทำนายโรคเบาหวาน -->
+            <div class="form-group">
+                <label for="Pregnancies">จำนวนการตั้งครรภ์:</label>
+                <input type="text" name="Pregnancies" placeholder="Pregnancies" required />
+            </div>
+            <div class="form-group">
+                <label for="Glucose">ระดับน้ำตาลในเลือด:</label>
+                <input type="text" name="Glucose" placeholder="Glucose" required />
+            </div>
+            <div class="form-group">
+                <label for="BloodPressure">ความดันโลหิต:</label>
+                <input type="text" name="BloodPressure" placeholder="Blood Pressure" required />
+            </div>
+            <div class="form-group">
+                <label for="SkinThickness">ความหนาของผิวหนัง:</label>
+                <input type="text" name="SkinThickness" placeholder="Skin Thickness" required />
+            </div>
+            <div class="form-group">
+                <label for="Insulin">ระดับอินซูลิน:</label>
+                <input type="text" name="Insulin" placeholder="Insulin" required />
+            </div>
+            <div class="form-group">
+                <label for="BMI">ค่าดัชนีมวลกาย (BMI):</label>
+                <input type="text" name="BMI" placeholder="BMI" required />
+            </div>
+            <div class="form-group">
+                <label for="DiabetesPedigreeFunction">พันธุกรรมของโรคเบาหวาน (DPF):</label>
+                <input type="text" name="DiabetesPedigreeFunction" placeholder="Diabetes Pedigree Function" required />
+            </div>
+            <div class="form-group">
+                <label for="Age">อายุ:</label>
+                <input type="text" name="Age" placeholder="Age" required />
+            </div>
+            <button type="submit">ทำนาย</button>
+        </form>
+
+        {% if results %}
+            <p>ผลการทำนาย: {{ results }}</p>
+            <ul>
+                {% for key, value in categorized_data.items %}
+                    <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <!-- Tab: Upload -->
+    <div id="upload" class="tab-content" style="display:none;">
+        <h2>อัปโหลดไฟล์ CSV</h2>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'upload11' %}">
+            {% csrf_token %}
+            <input type="file" name="file" />
+            <button type="submit">อัปโหลด</button>
+        </form>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+
+    <div id="analysis" class="tab-content" style="display:none;">
+        <!-- แสดงผลการวิเคราะห์ข้อมูลหลังจากอัปโหลด -->
+    </div>
+
+{% endblock %}
+
+<script>
+    function showTab(tabName) {
+        // ซ่อนแท็บทั้งหมด
+        var contents = document.querySelectorAll('.tab-content');
+        contents.forEach(function(content) {
+            content.style.display = 'none';
+        });
+
+        // แสดงแท็บที่เลือก
+        document.getElementById(tabName).style.display = 'block';
+    }
+
+    // เริ่มต้นที่แท็บ 'diagnose'
+    showTab('diagnose');
+</script>

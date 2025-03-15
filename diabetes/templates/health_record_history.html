@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Record - History</title>
+</head>
+<body>
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    </div>
+    <h1>Health Record History</h1>
+    <div id="chart">
+        <!-- Add chart library like Chart.js for graph rendering -->
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Blood Pressure</th>
+                <th>Weight</th>
+                <th>Height</th>
+                <th>BMI</th>
+                <th>Insulin</th>
+                <th>Fasting Blood Sugar</th>
+                <th>Postprandial Blood Sugar</th>
+                <th>HbA1c</th>
+                <th>BUN</th>
+                <th>Creatinine (CR)</th>
+                <th>eGFR</th>
+                <th>Triglycerides</th>
+                <th>Cholesterol</th>
+                <th>HDL</th>
+                <th>LDL</th>
+                <th>Albumin in Urine</th>
+                <th>EKG</th>
+                <th>Chest X-Ray</th>
+                <th>Diabetic Retinopathy Screening</th>
+                <th>Diabetic Foot Screening</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.date }}</td>
+                <td>{{ record.bloodPressure }}</td>
+                <td>{{ record.weight }}</td>
+                <td>{{ record.height }}</td>
+                <td>{{ record.bmi }}</td>
+                <td>{{ record.insulin }}</td>
+                <td>{{ record.fasting_blood_sugar }}</td>
+                <td>{{ record.postprandial_blood_sugar }}</td>
+                <td>{{ record.hba1c }}</td>
+                <td>{{ record.bun }}</td>
+                <td>{{ record.cr }}</td>
+                <td>{{ record.egfr }}</td>
+                <td>{{ record.triglycerides }}</td>
+                <td>{{ record.cholesterol }}</td>
+                <td>{{ record.hdl }}</td>
+                <td>{{ record.ldl }}</td>
+                <td>{{ record.albumin_in_urine }}</td>
+                <td>{{ record.ekg }}</td>
+                <td>{{ record.chest_x_ray }}</td>
+                <td>{{ record.diabetic_retinopathy_screening }}</td>
+                <td>{{ record.diabetic_foot_screening }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button onclick="location.href='{% url 'dashboard' %}'">Back to Dashboard</button>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #4CAF50;
+            padding: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            display: none;
+            flex-direction: column;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .navbar:hover .dropdown {
+            display: flex;
+        }
+
+        /* Header */
+        .header {
+            background-color: #5ED0E6;
+            padding: 40px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Buttons Container */
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Button Styles */
+        button:nth-child(1) {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button:nth-child(1):hover {
+            background-color: #45a049;
+        }
+
+        button:nth-child(2) {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button:nth-child(2):hover {
+            background-color: #d32f2f;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Health Record Saved</h1>
+    </div>
+
+    <!-- Buttons -->
+    <div class="container">
+        <button onclick="location.href='{% url 'view_records' %}'">Check Records</button>
+        <button onclick="location.href='{% url 'dashboard' %}'">Return to Dashboard</button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>

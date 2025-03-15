@@ -1,0 +1,39 @@
+<form method="POST">
+    {% csrf_token %}
+
+    <!-- เลือก HealthRecord1 เพื่อดึง BMI และ Blood Pressure -->
+    <label for="health_record1_id">เลือกข้อมูลสุขภาพ:</label>
+    <select name="health_record1_id" required>
+        {% for record in previous_records %}
+            <option value="{{ record.id }}">
+                {{ record.date_recorded }} - BMI: {{ record.bmi }} | BP: {{ record.blood_pressure }}
+            </option>
+        {% endfor %}
+    </select><br><br>
+
+    <!-- ข้อมูลอื่นที่ต้องกรอก -->
+    <label>Pregnancies:</label>
+    <input type="number" name="Pregnancies" required><br>
+
+    <label>Glucose:</label>
+    <input type="number" name="Glucose" required><br>
+
+    <label>Skin Thickness:</label>
+    <input type="number" name="SkinThickness" required><br>
+
+    <label>Insulin:</label>
+    <input type="number" name="Insulin" required><br>
+
+    <label>Diabetes Pedigree Function:</label>
+    <input type="text" name="DiabetesPedigreeFunction" required><br>
+
+    <label>Age:</label>
+    <input type="number" name="Age" required><br>
+
+    <button type="submit">วินิจฉัย</button>
+</form>
+
+<!-- แสดงข้อความ error ถ้ามี -->
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}

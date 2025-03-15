@@ -1,0 +1,8 @@
+{% if result %}
+    <h3>ผลการวิเคราะห์</h3>
+    <ul>
+        {% for model, prediction in result.items %}
+            <li>{{ model }}: {{ prediction }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

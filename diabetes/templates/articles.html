@@ -1,0 +1,54 @@
+{% extends 'base_docter.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="header">
+            {% if is_admin or is_medical_staff %}
+                <a href="{% url 'add_article' %}" class="btn-add">เพิ่มบทความ</a>
+            {% endif %}
+        </div>
+
+        <div class="articles">
+            {% for article in articles %}
+            <div class="article-card">
+                <div class="article-title">{{ article.title }}</div>
+             <!-- แสดงรูปภาพถ้ามี -->
+        {% if article.image %}
+        <div class="article-image">
+            <img src="{{ article.image.url }}" alt="Article Image" style="max-width:100%; height:auto;">
+        </div>
+        {% endif %}
+
+        <!-- แสดงวิดีโอถ้ามี -->
+        {% if article.video_url %}
+        <div class="article-video">
+            <iframe width="100%" height="250" src="{{ article.video_url|safe }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+        {% endif %}
+                <div class="article-content">
+                    {{ article.content|truncatewords:20 }}
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url 'view_article' article.id %}" class="btn btn-read">อ่านเพิ่มเติม</a>
+                    {% if is_admin or is_medical_staff %}
+                        <a href="{% url 'edit_article' article.id %}" class="btn btn-edit">แก้ไข</a>
+                    {% endif %}
+                    {% if is_admin %}
+                        <form method="POST" action="{% url 'delete_article' article.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('ยืนยันการลบบทความ?')">ลบ</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p>ไม่มีบทความในขณะนี้</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

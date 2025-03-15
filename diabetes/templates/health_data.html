@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data</title>
+</head>
+<body>
+    <h1>Health Data for {{ user.username }}</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Blood Pressure</th>
+                <th>BMI</th>
+                <th>Blood Sugar (Fasting)</th>
+                <th>postprandial blood sugar</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in health_records %}
+            <tr>
+                <td>{{ record.created_at }}</td>
+                <td>{{ record.blood_pressure }}</td>
+                <td>{{ record.bmi }}</td>
+                <td>{{ record.fasting_blood_sugar }}</td>
+                <td><a href="{% url 'edit_health_record' record.id %}">Edit</a> | <a href="#">Delete</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No health data available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="{% url 'add_health_record' %}">Add New Health Record</a>
+</body>
+</html>

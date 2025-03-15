@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายงานผลการวินิจฉัย</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 50px;
+        }
+        h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+        table td {
+            background-color: #f8f9fa;
+        }
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .no-data {
+            background-color: #f8d7da;
+            color: #721c24;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>รายงานผลการวินิจฉัยของสมาชิก</h2>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ผู้ใช้งาน</th>
+                    <th>ค่า BMI</th>
+                    <th>ความดันโลหิต</th>
+                    <th>น้ำตาลในเลือด</th>
+                    <th>การทำนาย</th>
+                    <th>วันที่บันทึก</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for diagnosis in diagnoses %}
+                    <tr>
+                        <td>{{ diagnosis.user.username }}</td>
+                        <td>{{ diagnosis.bmi }}</td>
+                        <td>{{ diagnosis.blood_pressure }}</td>
+                        <td>{{ diagnosis.glucose }}</td>
+                        <td>{{ diagnosis.age }}</td>
+                        <td>{{ diagnosis.prediction }}</td>
+                        <td>{{ diagnosis.created_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr class="no-data">
+                        <td colspan="6" class="text-center">ไม่มีข้อมูลการวินิจฉัย</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'dashboard_adminn' %}" class="btn btn-primary">กลับสู่หน้าแอดมิน</a>
+    </div>
+</body>
+</html>

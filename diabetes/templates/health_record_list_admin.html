@@ -1,0 +1,25 @@
+{% block content %}
+  <h1>ประวัติการบันทึกสุขภาพส่วนตัวทั้งหมด</h1>
+  <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-family: Arial, sans-serif;">
+    <thead>
+      <tr style="background-color: #f4f4f4; text-align: left;">
+        <th style="padding: 10px; border: 1px solid #ddd;">User</th>
+        <th style="padding: 10px; border: 1px solid #ddd;">Last Visit</th>
+        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in records %}
+      <tr style="background-color: #fff; border-bottom: 1px solid #ddd;">
+        <td style="padding: 10px; border: 1px solid #ddd;">{{ record.user.username }}</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">{{ record.last_visit_date }}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+          <a href="{% url 'health_record_detail_admin' record.id %}" style="padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">View</a>
+          <a href="{% url 'health_record_edit_admin' record.id %}" style="padding: 5px 10px; background-color: #FFC107; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Edit</a>
+          <a href="{% url 'health_record_delete_admin' record.id %}" style="padding: 5px 10px; background-color: #F44336; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

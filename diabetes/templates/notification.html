@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Management</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Montaga, sans-serif;
+            background: linear-gradient(to bottom, #5ED0E6, #004AAD);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+            color: #fff;
+        }
+        .section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #000;
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #004AAD;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #003080;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Member Section -->
+        <div class="section">
+            <h2>สำหรับสมาชิก</h2>
+            <p>บันทึกและตรวจสอบการแจ้งเตือนการรับประทานยาและการตรวจสุขภาพ</p>
+            <!-- Add Notification Form -->
+            <form method="post" action="{% url 'add_notification' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">ชื่อการแจ้งเตือน</label>
+                    <input type="text" id="title" name="title" placeholder="กรอกชื่อการแจ้งเตือน">
+                </div>
+                <div class="form-group">
+                    <label for="description">รายละเอียด</label>
+                    <textarea id="description" name="description" placeholder="กรอกรายละเอียด"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="scheduled_time">เวลาที่แจ้งเตือน</label>
+                    <input type="datetime-local" id="scheduled_time" name="scheduled_time">
+                </div>
+                <button type="submit" class="button">บันทึกการแจ้งเตือน</button>
+            </form>
+
+            <!-- View Notifications -->
+            <h3>การแจ้งเตือนของฉัน</h3>
+            <ul>
+                {% for notification in notifications %}
+                <li>{{ notification.title }} - {{ notification.scheduled_time }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Admin Section -->
+        <div class="section">
+            <h2>สำหรับแอดมิน</h2>
+            <p>เพิ่ม, ลบ หรือแก้ไขการแจ้งเตือนสำหรับสมาชิก</p>
+
+            <!-- Admin Notification Management -->
+            <h3>การแจ้งเตือนทั้งหมด</h3>
+            <ul>
+                {% for notification in all_notifications %}
+                <li>
+                    {{ notification.title }} - {{ notification.scheduled_time }}
+                    <a href="{% url 'edit_notification' notification.id %}" class="button">แก้ไข</a>
+                    <a href="{% url 'delete_notification' notification.id %}" class="button">ลบ</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

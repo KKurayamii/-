@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            padding: 20px;
+        }
+        h2 {
+            color: #4682b4;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-spacing: 0; /* ลดช่องว่างระหว่างเซลล์ */
+        }
+        th, td {
+            padding: 8px 10px; /* ลด padding ให้แคบลง */
+            text-align: center;
+            border: 1px solid #4682b4;
+        }
+        th {
+            background-color: #4682b4;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        td:hover {
+            background-color: #e6f2ff;
+        }
+        .no-records {
+            text-align: center;
+            color: #4682b4;
+            font-weight: bold;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #4682b4;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        /* เพิ่มเติมสำหรับจัดระเบียบข้อมูลใหม่ */
+        th, td {
+            min-width: 100px; /* ลดความกว้างของคอลัมน์ */
+        }
+        .table-container {
+            overflow-x: auto; /* ให้สามารถเลื่อนตารางได้หากข้อมูลเยอะ */
+        }
+    </style>
+</head>
+<body>
+    <h2>Diagnosis History</h2>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Result</th>
+                <th>Glucose</th>
+                <th>BMI</th>
+                <th>Age</th>
+                <th>Blood Pressure</th>
+                <th>Insulin</th>
+                <th>Diabetes Pedigree</th>
+                <th>Age</th>
+                <th>Date</th>
+            </tr>
+            {% if history %}
+                {% for record in history %}
+                <tr>
+                    <td>{{ record.user.username }}</td>
+                    <td>{{ record.result }}</td>
+                    <td>{{ record.glucose }}</td>
+                    <td>{{ record.bmi }}</td>
+                    <td>{{ record.age }}</td>
+                    <td>{{ record.blood_pressure }}</td>
+                    <td>{{ record.insulin }}</td>
+                    <td>{{ record.diabetes_pedigree }}</td>
+                    <td>{{ record.age }}</td>
+                    <td>{{ record.created_at }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="10" class="no-records">ยังไม่มีข้อมูลบันทึก</td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <a href="{% url 'dashboard' %}" class="back-link">Go Back to Dashboard</a>
+</body>
+</html>

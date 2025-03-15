@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Article</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>คุณต้องการลบบทความนี้ใช่ไหม?</h1>
+
+        <div class="article-details">
+            <h2>{{ article.title }}</h2>
+            <p>{{ article.content|truncatewords:20 }}</p>
+        </div>
+
+        <form method="POST" action="{% url 'delete_article' article.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" onclick="return confirm('ยืนยันการลบบทความ?')">ยืนยันการลบ</button>
+        </form>
+
+        <a href="{% url 'articles_list' %}" class="btn btn-secondary">ยกเลิก</a>
+    </div>
+</body>
+</html>

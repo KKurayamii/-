@@ -1,0 +1,20 @@
+{% block content %}
+  <div style="max-width: 800px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; color: #333;">Edit Health Record for {{ record.user.username }}</h1>
+
+    <form method="POST" style="margin-top: 20px;">
+      {% csrf_token %}
+
+      <div style="margin-bottom: 20px;">
+        {{ form.as_p }}
+      </div>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+          Save changes
+        </button>
+      </div>
+    </form>
+
+  </div>
+{% endblock %}

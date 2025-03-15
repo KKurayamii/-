@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Record</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #5ED0E6;
+            padding: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            display: none;
+            flex-direction: column;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .navbar:hover .dropdown {
+            display: flex;
+        }
+
+        /* Header */
+        .header {
+            background-color: #5ED0E6;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Form Container */
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            padding: 12px 20px;
+            margin-top: 20px;
+            background-color: #004AAD;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #004AAD;
+        }
+
+        /* Dropdown Menu for mobile */
+        .dropdown a {
+            background-color: #4CAF50;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar .dropdown {
+                position: absolute;
+                top: 60px;
+                left: 10px;
+                width: 100%;
+                display: flex;
+            }
+
+            .menu-icon {
+                font-size: 35px;
+                margin-right: 20px;
+            }
+
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Health Record</h1>
+    </div>
+
+    <!-- Form -->
+    <div class="container">
+        <form action="{% url 'save_health_data' %}" method="post">
+            {% csrf_token %}
+            <label>Blood Pressure</label>
+            <input type="text" name="blood_pressure" required>
+            <label>Weight</label>
+            <input type="number" name="weight" step="0.1" required>
+            <label>Height</label>
+            <input type="number" name="height" step="0.1" required>
+            <label>BMI</label>
+            <input type="number" name="bmi" step="0.1" required>
+            <label>Insulin</label>
+            <input type="text" name="insulin">
+            <label>Fasting Blood Sugar</label>
+            <input type="number" name="fasting_blood_sugar" step="0.1">
+            <label>Postprandial Blood Sugar</label>
+            <input type="number" name="postprandial_blood_sugar" step="0.1">
+            <label>HbA1c</label>
+            <input type="number" name="hba1c" step="0.1">
+            <label>BUN</label>
+            <input type="number" name="bun" step="0.1">
+            <label>Creatinine (CR)</label>
+            <input type="number" name="cr" step="0.1">
+            <label>eGFR</label>
+            <input type="number" name="egfr" step="0.1">
+            <label>Triglycerides</label>
+            <input type="number" name="triglycerides" step="0.1">
+            <label>Cholesterol</label>
+            <input type="number" name="cholesterol" step="0.1">
+            <label>HDL</label>
+            <input type="number" name="hdl" step="0.1">
+            <label>LDL</label>
+            <input type="number" name="ldl" step="0.1">
+            <label>Albumin in Urine</label>
+            <input type="number" name="albumin_in_urine" step="0.1">
+            <label>EKG</label>
+            <input type="text" name="ekg" placeholder="e.g. Normal">
+            <label>Chest X-Ray</label>
+            <input type="text" name="chest_x_ray" placeholder="e.g. No issues">
+            <label>Diabetic Retinopathy Screening</label>
+            <input type="text" name="diabetic_retinopathy_screening" placeholder="e.g. No signs">
+            <label>Diabetic Foot Screening</label>
+            <input type="text" name="diabetic_foot_screening" placeholder="e.g. No abnormalities">
+
+            <button type="submit">Completed</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>

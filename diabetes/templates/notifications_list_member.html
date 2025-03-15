@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications List</title>
+</head>
+<body>
+    <h1>Your Notifications</h1>
+    <ul>
+        {% for notification in notifications %}
+            <li>
+                <strong>{{ notification.title }}</strong> <br>
+                {{ notification.message }} <br>
+                <small>Scheduled for: {{ notification.send_time }}</small> <br>
+                <small>Status: {% if notification.is_active %}Active{% else %}Inactive{% endif %}</small>
+            </li>
+        {% empty %}
+            <li>No notifications available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

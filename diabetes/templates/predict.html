@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทำนายความเสี่ยงเบาหวาน</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #5ED0E6, #004AAD);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        input[type="number"], input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus, input[type="email"]:focus {
+            border-color: #5ED0E6;
+            outline: none;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 300px; /* เพิ่มขนาดให้พอดีกับข้อความ */
+            background-color: #333;
+            color: #fff;
+            text-align: left;  /* ปรับข้อความให้อยู่ด้านซ้าย */
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            bottom: 120%; /* ทำให้ Tooltip อยู่ห่างจาก input มากขึ้น */
+            left: 70%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            white-space: pre-wrap; /* รองรับการขึ้นบรรทัดใหม่ */
+            word-wrap: break-word; /* ป้องกันข้อความล้นออกจากกล่อง */
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #5ED0E6;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #4ac7d3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>ทำนายความเสี่ยงเบาหวาน</h2>
+        <form method="post" action="{% url 'predict_diabetes' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="age">อายุ (Age):</label>
+                <div class="tooltip-container">
+                    <input type="number" name="age" id="age" required>
+                    <span class="tooltip-text">อายุเป็นจำนวนปี โดย ให้กรอกเป็นตัวเลขตามกลุ่ม เช่น 0 = 0-12ปี ，1 = 13-19 ปี , 2 = 20-39 ปี, 3 = 40-59 ปี, 4 = 60 ขึ้นไป</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pregnancies">การตั้งครรภ์ (Pregnancies):</label>
+                <div class="tooltip-container">
+                    <input type="number" name="pregnancies" id="pregnancies" required>
+                    <span class="tooltip-text">การตั้งครรถ์เป็นจำนวนครั้งที่เคยตั้งครรภ์*หากแท้งจะไม่นำมานับ* โดย ให้กรอกเป็นตัวเลขตามกลุ่ม เช่น 0 = เคยตั้งครรภ์ 0-1 ครั้ง , 1 = เคยตั้งครรภ์ 2-3 ครั้ง , 2 = เคยตั้งครรภ์ 4 ครั้งหรือมากกว่า</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="glucose">ระดับน้ำตาลในเลือด (Glucose):</label>
+                <div class="tooltip-container">
+                    <input type="number" step="0.01" name="glucose" id="glucose" required>
+                    <span class="tooltip-text">ระดับน้ำตาลในเลือดหลังรับน้ำหวานไป 2 ชมเป็นค่าmg/dL โดย  ให้กรอกเป็นตัวเลขตามกลุ่ม เช่น 0 = ต่ำกว่า70mg/dL , 1 = 70-99mg/dL , 2 = 100-125mg/dL , 3 = 126mg/dLขึ้นไป</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="blood_pressure">ความดันโลหิต (Blood Pressure):</label>
+                <div class="tooltip-container">
+                    <input type="number" step="0.01" name="blood_pressure" id="blood_pressure" required>
+                    <span class="tooltip-text">เป็นหน่วย mmHg โดย  ให้กรอกเป็นตัวเลขตามกลุ่ม เช่น 0 = ต่ำกว่า60mmHg , 1 = 60-79mmHg , 2 = 80-89mmHg , 3 = 90-99mmHg , 4 = 100-109mmHg , 5 = 110mmHg</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="insulin">ระดับอินซูลิน (Insulin):</label>
+                <div class="tooltip-container">
+                    <input type="number" step="0.01" name="insulin" id="insulin" required>
+                    <span class="tooltip-text">ระดับอินซูลินหลังรับประทานอาหารไปแล้ว 2 ชั่วโมงเป็นค่าµU/ml โดย  ให้กรอกเป็นตัวเลขตามกลุ่ม เช่น 0 = 0-30µU/ml , 1 = 30-60µU/ml , 2 = 60-120µU/ml , 3 = มากกว่า120µU/ml</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bmi">ค่า BMI:</label>
+                <div class="tooltip-container">
+                    <input type="number" step="0.01" name="bmi" id="bmi" required>
+                    <span class="tooltip-text">ค่าดัชนีมวลกาย เช่น 18.5-24.9 ปกติ</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="hba1c">ค่า HbA1c:</label>
+                <div class="tooltip-container">
+                    <input type="number" step="0.01" name="hba1c" id="hba1c" required>
+                    <span class="tooltip-text">เช่น 5.7–6.4 mg% เป็นต้น</span>
+                </div>
+            </div>
+
+            <button type="submit">ทำนาย</button>
+        </form>
+
+        <div class="form-footer">
+            <p>กรุณากรอกข้อมูลให้ครบถ้วนเพื่อทำการทำนายความเสี่ยงเบาหวาน</p>
+        </div>
+    </div>
+
+</body>
+</html>

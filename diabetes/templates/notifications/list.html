@@ -1,0 +1,117 @@
+<!-- รายการแจ้งเตือน -->
+<div class="container">
+    <h2 class="text-center mb-4">📢 รายการแจ้งเตือนของคุณ</h2>
+
+    <div class="text-end mb-3">
+        <a href="{% url 'notification_create' %}" class="btn btn-success">➕ เพิ่มแจ้งเตือนใหม่</a>
+    </div>
+
+    {% if notifications %}
+    <ul class="list-group">
+        {% for notification in notifications %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ notification.title }}</strong>
+                <span class="text-muted">({{ notification.schedule_time }})</span>
+            </div>
+            <div>
+                <a href="{% url 'notification_update' notification.id %}" class="btn btn-warning btn-sm">✏️ แก้ไข</a>
+                <a href="{% url 'notification_delete' notification.id %}" class="btn btn-danger btn-sm">🗑️ ลบ</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-center text-muted">ไม่มีการแจ้งเตือนในขณะนี้</p>
+    {% endif %}
+</div>
+
+<!-- เพิ่ม CSS -->
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    .container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 800px;
+        margin: 30px auto;
+    }
+
+    h2 {
+        color: #000;
+        font-size: 24px;
+    }
+
+    .text-end a {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    .list-group {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .list-group-item {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s;
+    }
+
+    .list-group-item:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success {
+        background-color: #004AAD;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #004AAD;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .text-muted {
+        font-size: 14px;
+        color: #6c757d;
+    }
+</style>

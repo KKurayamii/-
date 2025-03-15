@@ -1,0 +1,30 @@
+<h1>ข้อมูลการวินิจฉัย - ไม่เสี่ยง</h1>
+
+{% if data %}
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>BMI</th>
+                <th>Blood Pressure</th>
+                <th>Glucose</th>
+                <th>Prediction</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for diagnosis in data %}
+                <tr>
+                    <td>{{ diagnosis.user.username }}</td>
+                    <td>{{ diagnosis.bmi }}</td>
+                    <td>{{ diagnosis.blood_pressure }}</td>
+                    <td>{{ diagnosis.glucose }}</td>
+                    <td>{{ diagnosis.prediction }}</td>
+                    <td>{{ diagnosis.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>ไม่มีข้อมูลการวินิจฉัยที่ไม่เสี่ยงในระบบ</p>
+{% endif %}

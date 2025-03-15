@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            padding: 20px;
+        }
+        h1 {
+            color: #4682b4;
+        }
+        .result-box {
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #4682b4;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            text-align: center;
+        }
+        .result-box p {
+            font-size: 1.5em;
+            color: #333;
+        }
+        .result-box .result {
+            font-weight: bold;
+            font-size: 2em;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            color: #4682b4;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diagnosis Result</h1>
+
+    <div class="result-box">
+        <p>Your diagnosis result is:</p>
+        <p class="result">{{ result }}</p>
+        <p>Model Used: {{ model_name }}</p> <!-- แสดงชื่อโมเดล -->
+    </div>
+
+    <a href="{% url 'diagnose' %}" class="back-link">Go Back to Diagnose</a>
+</body>
+</html>

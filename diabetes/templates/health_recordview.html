@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติสุขภาพ</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 30px;
+            width: 90%;
+            max-width: 1200px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+        .data {
+            font-size: 18px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #e1f5fe;
+            border-radius: 10px;
+            color: #1565c0;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .alert {
+            color: red;
+            font-weight: bold;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        .normal {
+            color: green;
+            font-weight: bold;
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .horizontal-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .divider {
+            height: 2px;
+            background-color: #cfd8dc;
+            margin: 20px 0;
+        }
+        .card-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #757575;
+        }
+        .health-summary {
+            cursor: pointer;
+            background-color: #1565c0;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .health-summary:hover {
+            background-color: #0d47a1;
+        }
+        .button {
+            display: inline-block;
+            background-color: #1565c0;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- น้ำหนัก, ส่วนสูง, BMI -->
+        <div class="card">
+            <div class="title">น้ำหนัก, ส่วนสูง, BMI</div>
+            <div class="horizontal-container">
+                <div class="data">น้ำหนัก: <span class="highlight">{{ record.weight }}</span> กก.</div>
+                <div class="data">ส่วนสูง: <span class="highlight">{{ record.height }}</span> ซม.</div>
+                <div class="data">BMI: <span class="highlight">{{ record.bmi }}</span></div>
+            </div>
+        </div>
+
+        <!-- ระดับน้ำตาลในเลือด -->
+        <div class="card">
+            <div class="title">ระดับน้ำตาลในเลือด</div>
+            <div class="data">ระดับน้ำตาลก่อนอาหาร:
+                <span class="highlight">{{ record.fasting_blood_sugar }}</span> mg/dL
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="data">ระดับน้ำตาลหลังอาหาร:
+                <span class="highlight">{{ record.postprandial_blood_sugar }}</span> mg/dL
+            </div>
+        </div>
+
+        <!-- ความดันโลหิต (แสดง DBP เท่านั้น) -->
+        <div class="card">
+            <div class="title">ความดันโลหิต (DBP)</div>
+            <div class="data">ความดันโลหิตต่ำ (DBP): <span class="highlight">{{ record.blood_pressure }}</span> mmHg</div>
+        </div>
+
+        <!-- ค่าคอเลสเตอรอล -->
+        <div class="card">
+            <div class="title">ค่าคอเลสเตอรอล</div>
+            <div class="data">ค่าคอเลสเตอรอล: <span class="highlight">{{ record.cholesterol }}</span> mg/dL</div>
+        </div>
+
+        <!-- อินซูลิน -->
+        <div class="card">
+            <div class="title">ระดับอินซูลิน</div>
+            <div class="data">ระดับอินซูลิน: <span class="highlight">{{ record.insulin }}</span> µU/mL</div>
+        </div>
+
+        <!-- HbA1c -->
+        <div class="card">
+            <div class="title">ระดับ HbA1c</div>
+            <div class="data">ระดับ HbA1c: <span class="highlight">{{ record.hba1c }}</span> %</div>
+        </div>
+
+        <!-- BUN -->
+        <div class="card">
+            <div class="title">BUN (ระดับยูเรียในเลือด)</div>
+            <div class="data">BUN: <span class="highlight">{{ record.bun }}</span> mg/dL</div>
+        </div>
+
+        <!-- CR -->
+        <div class="card">
+            <div class="title">ระดับ Creatinine</div>
+            <div class="data">Creatinine: <span class="highlight">{{ record.cr }}</span> mg/dL</div>
+        </div>
+
+        <!-- eGFR -->
+        <div class="card">
+            <div class="title">ระดับ eGFR (การกรองของไต)</div>
+            <div class="data">eGFR: <span class="highlight">{{ record.egfr }}</span> mL/min/1.73m²</div>
+        </div>
+
+        <!-- ไตรกลีเซอไรด์ -->
+        <div class="card">
+            <div class="title">ระดับไตรกลีเซอไรด์</div>
+            <div class="data">ไตรกลีเซอไรด์: <span class="highlight">{{ record.triglycerides }}</span> mg/dL</div>
+        </div>
+
+        <!-- HDL (คอเลสเตอรอลดี) -->
+        <div class="card">
+            <div class="title">ระดับ HDL</div>
+            <div class="data">HDL: <span class="highlight">{{ record.hdl }}</span> mg/dL</div>
+        </div>
+
+        <!-- LDL (คอเลสเตอรอลไม่ดี) -->
+        <div class="card">
+            <div class="title">ระดับ LDL</div>
+            <div class="data">LDL: <span class="highlight">{{ record.ldl }}</span> mg/dL</div>
+        </div>
+
+        <!-- โปรตีนในปัสสาวะ -->
+        <div class="card">
+            <div class="title">โปรตีนในปัสสาวะ</div>
+            <div class="data">โปรตีนในปัสสาวะ: <span class="highlight">{{ record.albumin_in_urine }}</span> mg/dL</div>
+        </div>
+
+        <!-- EKG -->
+        <div class="card">
+            <div class="title">ผล EKG</div>
+            <div class="data">ผล EKG: <span class="highlight">{{ record.ekg }}</span></div>
+        </div>
+
+        <!-- X-Ray -->
+        <div class="card">
+            <div class="title">ผล X-Ray</div>
+            <div class="data">ผล X-Ray: <span class="highlight">{{ record.chest_x_ray }}</span></div>
+        </div>
+
+        <!-- การตรวจจอตา -->
+        <div class="card">
+            <div class="title">การตรวจจอตา</div>
+            <div class="data">ผลการตรวจจอตา: <span class="highlight">{{ record.diabetic_retinopathy_screening }}</span></div>
+        </div>
+
+        <!-- การตรวจเท้า -->
+        <div class="card">
+            <div class="title">การตรวจเท้า</div>
+            <div class="data">ผลการตรวจเท้า: <span class="highlight">{{ record.diabetic_foot_screening }}</span></div>
+        </div>
+
+        <!-- วันที่เข้าพบแพทย์ล่าสุด -->
+        <div class="card">
+            <div class="title">วันที่เข้าพบแพทย์ล่าสุด</div>
+            <div class="data">วันที่พบแพทย์ล่าสุด: <span class="highlight">{{ record.last_visit_date|date:"Y-m-d H:i" }}</span></div>
+        </div>
+
+        <!-- วันที่บันทึกข้อมูล -->
+        <div class="card">
+            <div class="title">วันที่บันทึกข้อมูลล่าสุด</div>
+            <div class="data">วันที่บันทึก: <span class="highlight">{{ record.date_recorded|date:"Y-m-d H:i" }}</span></div>
+        </div>
+
+        <div class="card-footer">
+            <p>ข้อมูลสุขภาพล่าสุดจากผู้ใช้งาน</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'dashboard' %}" class="button">กลับสู่หน้า Home</a>
+        </div>
+    </div>
+</body>
+</html>

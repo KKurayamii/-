@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Article</title>
+    {% load static %}
+    {% load custom_filter %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom,#5ED0E6, #004AAD);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 28px;
+            color: #4682b4;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .article-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        .article-content p {
+            margin: 10px 0;
+        }
+        .btn {
+            display: block;
+            text-align: center;
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #4682b4;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+            background-color: #4169e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ article.title }}</h1>
+
+        {% if article.image %}
+            <div class="article-image">
+                <img src="{{ article.image.url }}" alt="Article Image" style="max-width: 100%;">
+            </div>
+        {% endif %}
+
+        {% if article.video_url %}
+            <div class="article-video">
+                <iframe width="560" height="315" src="{{ article.video_url }}" frameborder="0" allowfullscreen></iframe>
+            </div>
+        {% endif %}
+
+        <div class="article-content">
+            <p>{{ article.formatted_content|safe }}</p>
+        </div>
+
+<!-- แสดงคะแนนดาว -->
+<div class="rating">
+    {% for i in rating_range %}
+        <!-- การแสดงดาวที่ได้รับจากผู้ใช้ -->
+        <span class="star">
+            {% if i <= article.rating %}
+                ★
+            {% else %}
+                ☆
+            {% endif %}
+        </span>
+    {% endfor %}
+</div>
+
+
+<!-- แบบฟอร์มให้คะแนนบทความ -->
+<form method="POST" action="{% url 'rate_article' article.id %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="rating">ให้คะแนนบทความ:</label>
+        <select name="rating" id="rating">
+            <option value="1">1 ดาว</option>
+            <option value="2">2 ดาว</option>
+            <option value="3">3 ดาว</option>
+            <option value="4">4 ดาว</option>
+            <option value="5">5 ดาว</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">ให้คะแนน</button>
+</form>
+
+        <a href="{% url 'articles_list' %}" class="btn">กลับไปที่บทความทั้งหมด</a>
+    </div>
+</body>
+</html>

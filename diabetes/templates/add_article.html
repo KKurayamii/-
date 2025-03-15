@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มบทความ</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Montaga, sans-serif;
+            background: linear-gradient(to bottom, #5ED0E6, #004AAD);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #000;
+        }
+        h1 {
+            text-align: center;
+            color: #004AAD;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #004AAD;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #004AAD;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #003080;
+        }
+        .btn-secondary {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #ddd;
+            color: #000;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            background-color: #bbb;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <h1>เพิ่มบทความ</h1>
+
+    <form method="POST" action="{% url 'add_article' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="title">หัวข้อบทความ</label>
+            <input type="text" name="title" id="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="content">เนื้อหาบทความ</label>
+            <textarea name="content" id="content" rows="6" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="image">อัปโหลดรูปภาพ</label>
+            <input type="file" name="image" id="image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label for="video_url">ลิงก์วิดีโอ (YouTube/Vimeo)</label>
+            <input type="url" name="video_url" id="video_url" placeholder="วางลิงก์วิดีโอที่นี่">
+        </div>
+
+        <button type="submit" class="button">บันทึกบทความ</button>
+    </form>
+
+    <a href="{% url 'articles_list' %}" class="btn-secondary">กลับไปที่บทความทั้งหมด</a>
+</div>

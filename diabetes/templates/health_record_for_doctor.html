@@ -1,0 +1,21 @@
+
+
+{% block content %}
+  <h1>Health Records for Doctors</h1>
+  <table>
+    <tr>
+      <th>User</th>
+      <th>Last Visit</th>
+      <th>Action</th>
+    </tr>
+    {% for record in records %}
+    <tr>
+      <td>{{ record.user.username }}</td>
+      <td>{{ record.last_visit_date }}</td>
+      <td>
+        <a href="{% url 'health_record_detail_for_doctor' record.id %}">View</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

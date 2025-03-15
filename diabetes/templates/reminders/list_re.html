@@ -1,0 +1,11 @@
+<h2>My Reminders</h2>
+<a href="{% url 'add_reminder' %}">+ Add Reminder</a>
+<ul>
+    {% for reminder in reminders %}
+        <li>
+            {{ reminder.title }} - {{ reminder.time }}
+            <a href="{% url 'edit_reminder' reminder.id %}">Edit</a>
+            <a href="{% url 'delete_reminder' reminder.id %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,319 @@
+{% extends 'base_user.html' %}
+
+ {% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกข้อมูลสุขภาพ</title>
+    <style>
+        /* ตั้งค่าพื้นฐาน */
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* คอนเทนเนอร์หลัก */
+        .container {
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            margin: 100px auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        /* หัวข้อ */
+        .title {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* แถบแท็บ */
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+        }
+
+        .tab:hover, .tab.active {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+        }
+
+        /* ซ่อนส่วนที่ไม่ได้เลือก */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* กำหนดสไตล์ของช่องป้อนข้อมูล */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #f5f5f5;
+        }
+
+        /* ปุ่มกด */
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background: #004AAD;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover {
+            background: #004AAD;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="title">บันทึกข้อมูลสุขภาพ</h2>
+
+        <!-- แถบแท็บ -->
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('general-info')">ข้อมูลทั่วไป</div>
+            <div class="tab" onclick="showTab('biochemistry')">ค่าทางชีวเคมี</div>
+            <div class="tab" onclick="showTab('additional-tests')">การตรวจเพิ่มเติม</div>
+        </div>
+
+        <form method="post" class="health-form" onsubmit="return validateForm()">
+            {% csrf_token %}
+
+            <!-- ข้อมูลทั่วไป -->
+            <div id="general-info" class="tab-content active">
+                <div class="form-group">
+                    <label>ความดันโลหิต:</label>
+                    {{ form.blood_pressure }}
+                </div>
+                <div class="form-group">
+                    <label>น้ำหนัก (kg):</label>
+                    {{ form.weight }}
+                </div>
+                <div class="form-group">
+                    <label>ส่วนสูง (cm):</label>
+                    {{ form.height }}
+                </div>
+                <div class="form-group">
+                    <label>BMI:</label>
+                    <input id="bmi_display" type="text" value="{{ form.instance.bmi|default:0 }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>อินซูลิน:</label>
+                    {{ form.insulin }}
+                </div>
+                <div class="form-group">
+                    <label>ระดับน้ำตาลก่อนอาหาร:</label>
+                    {{ form.fasting_blood_sugar }}
+                </div>
+                <div class="form-group">
+                    <label>ระดับน้ำตาลหลังอาหาร:</label>
+                    {{ form.postprandial_blood_sugar }}
+                </div>
+                <!-- ✅ เพิ่มช่องเลือกวันที่พบแพทย์ล่าสุด -->
+                <div class="form-group">
+                    <label>วันที่พบแพทย์ล่าสุด:</label>
+                    <input type="datetime-local" name="last_visit_date" value="{{ form.instance.last_visit_date|date:'Y-m-d\TH:i' }}">
+                </div>
+            </div>
+
+            <!-- ค่าทางชีวเคมี -->
+            <div id="biochemistry" class="tab-content">
+                <div class="form-group">
+                    <label>HbA1c:</label>
+                    {{ form.hba1c }}
+                </div>
+                <div class="form-group">
+                    <label>BUN:</label>
+                    {{ form.bun }}
+                </div>
+                <div class="form-group">
+                    <label>Creatinine:</label>
+                    {{ form.cr }}
+                </div>
+                <div class="form-group">
+                    <label>eGFR:</label>
+                    {{ form.egfr }}
+                </div>
+                <div class="form-group">
+                    <label>Triglycerides:</label>
+                    {{ form.triglycerides }}
+                </div>
+                <div class="form-group">
+                    <label>Cholesterol:</label>
+                    {{ form.cholesterol }}
+                </div>
+                <div class="form-group">
+                    <label>HDL:</label>
+                    {{ form.hdl }}
+                </div>
+                <div class="form-group">
+                    <label>LDL:</label>
+                    {{ form.ldl }}
+                </div>
+            </div>
+
+            <!-- การตรวจเพิ่มเติม -->
+            <div id="additional-tests" class="tab-content">
+                <div class="form-group">
+                    <label>Albumin ในปัสสาวะ:</label>
+                    {{ form.albumin_in_urine }}
+                </div>
+                <div class="form-group">
+                    <label>EKG:</label>
+                    {{ form.ekg }}
+                </div>
+                <div class="form-group">
+                    <label>เอกซเรย์ปอด:</label>
+                    {{ form.chest_x_ray }}
+                </div>
+                <div class="form-group">
+                    <label>ตรวจจอประสาทตา:</label>
+                    {{ form.diabetic_retinopathy_screening }}
+                </div>
+                <div class="form-group">
+                    <label>ตรวจเท้าผู้ป่วยเบาหวาน:</label>
+                    {{ form.diabetic_foot_screening }}
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">บันทึกข้อมูล</button>
+        </form>
+
+        <p id="error-message" style="color: red; text-align: center; display: none;">กรุณากรอกข้อมูลให้ครบทุกช่อง!</p>
+
+        <h3>จำนวนการบันทึกทั้งหมด: <span id="record-count">{{ total_records }}</span></h3>
+
+ <!-- ตารางแสดงข้อมูลการบันทึก -->
+<table>
+    <thead>
+        <tr>
+            <th>วันที่บันทึก</th>
+            <th>จำนวนการบันทึก</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records %}
+            <tr>
+                <td>{{ record.date_recorded|date:"d/m/Y" }}</td>
+                <td>{{ forloop.counter }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center;">ไม่มีข้อมูลการบันทึก</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function validateForm() {
+            let inputs = document.querySelectorAll('.tab-content.active input, .tab-content.active select');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                if (input.value.trim() === '') {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                document.getElementById('error-message').style.display = 'block';
+            }
+
+            return isValid;
+        }
+
+        function calculateBMI() {
+    var weight = parseFloat(document.getElementById('id_weight').value);  // ดึงค่าน้ำหนัก
+    var height = parseFloat(document.getElementById('id_height').value);  // ดึงค่าส่วนสูง
+
+    // ตรวจสอบว่าได้กรอกข้อมูลครบถ้วนหรือไม่
+    if (weight && height) {
+        var bmi = weight / ((height / 100) * (height / 100));  // คำนวณค่า BMI
+        document.getElementById('bmi_display').value = bmi.toFixed(2);  // แสดงผลในช่อง BMI
+    } else {
+        document.getElementById('bmi_display').value = '';  // ถ้าไม่ได้กรอกข้อมูลครบ
+    }
+}
+// เพิ่ม event listener เมื่อกรอกข้อมูลน้ำหนักและส่วนสูง
+document.getElementById('id_weight').addEventListener('input', calculateBMI);
+document.getElementById('id_height').addEventListener('input', calculateBMI);
+    </script>
+
+    <a href="{% url 'dashboard' %}" class="back-btn">กลับสู่หน้า Home</a>
+</body>
+</html>
+
+ {% endblock %}

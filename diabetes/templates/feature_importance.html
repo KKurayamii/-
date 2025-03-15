@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Importance</title>
+</head>
+<body>
+    <h1>Top 5 Important Features</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% else %}
+        <p>อัพเดตโมเดลวันที่: {{ uploaded_at }}</p>
+        <img src="data:image/png;base64,{{ image_base64 }}" alt="Feature Importance Chart">
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่ม/แก้ไขแจ้งเตือน</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-field label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus {
+            border-color: #4A90E2;
+            outline: none;
+        }
+
+        button {
+            background-color: #004AAD;
+            color: #fff;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #004AAD;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>เพิ่ม/แก้ไขแจ้งเตือน</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-field">
+                {{ form.as_p }}
+            </div>
+            <button type="submit">บันทึก</button>
+        </form>
+    </div>
+</body>
+</html>

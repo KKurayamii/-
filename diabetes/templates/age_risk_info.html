@@ -1,0 +1,12 @@
+{% extends 'base_docter.html' %}
+{% block content %}
+
+<h2>ข้อมูลเสี่ยง/ไม่เสี่ยง - {{ age_category | title }} ({{ risk_category | title }})</h2>
+
+<ul>
+    {% for record in data %}
+        <li>{{ record.name }} - {{ record.age }} ปี - {{ record.prediction }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Health Record</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            background: #333;
+            padding: 10px;
+            color: white;
+        }
+        .menu-icon {
+            cursor: pointer;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'view_all_records' %}">Back to Records</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Edit Health Record</h1>
+    </div>
+
+    <div class="container">
+        <form action="{% url 'edit_record' record.id %}" method="post">
+            {% csrf_token %}
+            <label>Blood Pressure</label>
+            <input type="text" name="blood_pressure" value="{{ record.blood_pressure }}" required>
+            <label>Weight</label>
+            <input type="number" name="weight" step="0.1" value="{{ record.weight }}" required>
+            <label>Height</label>
+            <input type="number" name="height" step="0.1" value="{{ record.height }}" required>
+            <label>BMI</label>
+            <input type="number" name="bmi" step="0.1" value="{{ record.bmi }}" required>
+            <label>Insulin</label>
+            <input type="text" name="insulin" value="{{ record.insulin }}">
+            <label>Fasting Blood Sugar</label>
+            <input type="number" name="fasting_blood_sugar" step="0.1" value="{{ record.fasting_blood_sugar }}">
+            <label>Postprandial Blood Sugar</label>
+            <input type="number" name="postprandial_blood_sugar" step="0.1" value="{{ record.postprandial_blood_sugar }}">
+            <label>HbA1c</label>
+            <input type="number" name="hba1c" step="0.1" value="{{ record.hba1c }}">
+            <label>BUN</label>
+            <input type="number" name="bun" step="0.1" value="{{ record.bun }}">
+            <label>Creatinine (Cr)</label>
+            <input type="number" name="cr" step="0.1" value="{{ record.cr }}">
+            <label>eGFR</label>
+            <input type="number" name="egfr" step="0.1" value="{{ record.egfr }}">
+            <label>Cholesterol</label>
+            <input type="number" name="cholesterol" step="0.1" value="{{ record.cholesterol }}">
+            <label>Triglycerides</label>
+            <input type="number" name="triglycerides" step="0.1" value="{{ record.triglycerides }}">
+            <label>HDL</label>
+            <input type="number" name="hdl" step="0.1" value="{{ record.hdl }}">
+            <label>LDL</label>
+            <input type="number" name="ldl" step="0.1" value="{{ record.ldl }}">
+            <label>Albumin in Urine</label>
+            <input type="number" name="albumin_in_urine" step="0.1" value="{{ record.albumin_in_urine }}">
+            <label>Diabetic Retinopathy Screening</label>
+            <input type="text" name="diabetic_retinopathy_screening" value="{{ record.diabetic_retinopathy_screening }}">
+            <label>Diabetic Foot Screening</label>
+            <input type="text" name="diabetic_foot_screening" value="{{ record.diabetic_foot_screening }}">
+            <label>EKG</label>
+            <input type="text" name="ekg" value="{{ record.ekg }}">
+            <label>Chest X-Ray</label>
+            <input type="text" name="chest_x_ray" value="{{ record.chest_x_ray }}">
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>

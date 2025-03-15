@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Health Records</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #5ED0E6;
+            padding: 15px;
+            color: white;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .profile-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .dropdown a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #2c3e50;
+            display: block;
+        }
+
+        .dropdown a:hover {
+            background: #ecf0f1;
+        }
+
+        /* Container */
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #00;
+        }
+
+        /* Health Record Cards */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        strong {
+            color: #2c3e50;
+        }
+
+        /* Chart */
+        #bloodSugarChart {
+            max-width: 100%;
+            height: 300px;
+            margin: 20px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="profile-icon" onclick="location.href='{% url 'profile' %}'">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture">
+            {% endif %}
+        </div>
+        <div class="dropdown" id="menu">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'dashboard' %}">Home</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+
+    <!-- Health Records -->
+    <div class="container">
+        <h1>Your Health Records</h1>
+
+        {% if health_records %}
+            <ul>
+                {% for record in health_records %}
+                    <li>
+                        <strong>Date:</strong> {{ record.date_created }}<br>
+                        <strong>Blood Pressure:</strong> {{ record.blood_pressure }}<br>
+                        <strong>Weight:</strong> {{ record.weight }} kg<br>
+                        <strong>Height:</strong> {{ record.height }} cm<br>
+                        <strong>BMI:</strong> {{ record.bmi }}<br>
+                        <strong>Fasting Blood Sugar:</strong> {{ record.fasting_blood_sugar }} mg/dL<br>
+                        <strong>Postprandial Blood Sugar:</strong> {{ record.postprandial_blood_sugar }} mg/dL<br>
+                        <strong>HbA1c:</strong> {{ record.hba1c }}%<br>
+                        <strong>Triglycerides:</strong> {{ record.triglycerides }} mg/dL<br>
+                        <strong>Cholesterol:</strong> {{ record.cholesterol }} mg/dL<br>
+                        <strong>EKG:</strong> {{ record.ekg }}<br>
+                        <strong>Chest X-Ray:</strong> {{ record.chest_x_ray }}<br>
+                        <strong>Diabetic Retinopathy Screening:</strong> {{ record.diabetic_retinopathy_screening }}<br>
+                        <strong>Diabetic Foot Screening:</strong> {{ record.diabetic_foot_screening }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="text-align: center; color: #7f8c8d;">You have no health records yet.</p>
+        {% endif %}
+
+        <!-- Blood Sugar Level Trend (Chart.js) -->
+        <h2>Blood Sugar Levels Trend</h2>
+        <canvas id="bloodSugarChart"></canvas>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Blood Sugar Chart
+        var ctx = document.getElementById('bloodSugarChart').getContext('2d');
+        var bloodSugarChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: 'Blood Sugar (mg/dL)',
+                    data: {{ blood_sugar_data|safe }},
+                    fill: false,
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                    tension: 0.4,
+                    pointBackgroundColor: '#e74c3c',
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                            color: '#34495e',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Blood Sugar Level (mg/dL)',
+                            color: '#34495e',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#2c3e50',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

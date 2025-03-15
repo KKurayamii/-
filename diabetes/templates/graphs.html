@@ -1,0 +1,103 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กราฟสรุปผลการวินิจฉัย</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>กราฟสรุปผลการวินิจฉัย</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <canvas id="ageDistributionChart"></canvas>
+        </div>
+        <div class="col-md-4">
+            <canvas id="bmiDistributionChart"></canvas>
+        </div>
+        <div class="col-md-4">
+            <canvas id="glucoseDistributionChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // กราฟการกระจายอายุ
+        var ctx = document.getElementById('ageDistributionChart').getContext('2d');
+        var ageDistributionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['เด็ก', 'วัยรุ่น', 'วัยหนุ่มสาว', 'วัยกลางคน', 'วัยชรา'],
+                datasets: [{
+                    label: 'จำนวนผู้ป่วยตามกลุ่มอายุ',
+                    data: [{{ age_counts|join:', ' }}],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // กราฟการกระจาย BMI
+        var ctx = document.getElementById('bmiDistributionChart').getContext('2d');
+        var bmiDistributionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['ต่ำกว่าเกณฑ์', 'ปกติ', 'น้ำหนักเกิน', 'โรคอ้วนระดับ 1', 'โรคอ้วนระดับ 2', 'โรคอ้วนระดับ 3'],
+                datasets: [{
+                    label: 'จำนวนผู้ป่วยตาม BMI',
+                    data: [{{ bmi_counts|join:', ' }}],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // กราฟการกระจายน้ำตาลในเลือด (Glucose)
+        var ctx = document.getElementById('glucoseDistributionChart').getContext('2d');
+        var glucoseDistributionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['น้ำตาลต่ำ', 'ปกติ', 'ระดับก่อนเบาหวาน', 'มีความเสี่ยงเบาหวาน'],
+                datasets: [{
+                    label: 'จำนวนผู้ป่วยตามระดับน้ำตาลในเลือด',
+                    data: [{{ glucose_counts|join:', ' }}],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

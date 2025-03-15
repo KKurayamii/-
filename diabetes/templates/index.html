@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Push Notification with Firebase</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.2/firebase-messaging.js"></script>
+
+  <script>
+  // Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA6o1WEhOdGO88V-4hYM4H6PeohezCwEoU",
+  authDomain: "mydjangonotifications.firebaseapp.com",
+  projectId: "mydjangonotifications",
+  storageBucket: "mydjangonotifications.firebasestorage.app",
+  messagingSenderId: "685866128618",
+  appId: "1:685866128618:web:f97d7d687b96cf3729b393"
+};
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    // Request permission to receive push notifications
+    function requestPermission() {
+      console.log("Requesting permission for notifications...");
+
+      // Request permission to show notifications
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+          // Get the FCM device token
+          getToken();
+        } else {
+          console.log("Notification permission denied.");
+        }
+      });
+    }
+
+    // Get the FCM device token
+    function getToken() {
+      messaging.getToken({ vapidKey: 'BBWSNihAwipLDzSOxhsjlMMHjbZLWWft9iHg9rKxyBfS-UxsQ62R0KJSzyJ2wb2Je00D3ORYUwNiWqiXGvn9mhk' }).then((currentToken) => {
+        if (currentToken) {
+          console.log("FCM Token:", currentToken);
+          // You can send the token to your server to send notifications later
+        } else {
+          console.log("No Instance ID token available.");
+        }
+      }).catch((err) => {
+        console.log("Error retrieving token:", err);
+      });
+    }
+
+    // Handle incoming messages
+    messaging.onMessage((payload) => {
+      console.log("Message received. ", payload);
+      // Customize the notification here
+      new Notification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: payload.notification.icon,
+      });
+    });
+
+    // On page load, request permission to receive notifications
+    window.onload = () => {
+      requestPermission();
+    };
+  </script>
+</head>
+<body>
+  <h1>Firebase Push Notifications</h1>
+  <p>Push notifications will be shown here when received!</p>
+</body>
+</html>

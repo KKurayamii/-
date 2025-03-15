@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ดูข้อมูลการบันทึกการแจ้งเตือน</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .notification-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .notification-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .notification-item h4 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .notification-item p {
+            font-size: 1em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>ข้อมูลการแจ้งเตือน</h1>
+
+    <ul class="notification-list" id="notificationList">
+        <!-- รายการการแจ้งเตือนจะถูกแสดงที่นี่ -->
+    </ul>
+
+    <script>
+        // ตัวอย่างข้อมูลการแจ้งเตือน
+        const notifications = [
+            { title: "การแจ้งเตือนที่ 1", message: "มีข้อความใหม่จากผู้ใช้งาน" },
+            { title: "การแจ้งเตือนที่ 2", message: "ระบบกำลังอัปเดตข้อมูล" },
+            { title: "การแจ้งเตือนที่ 3", message: "มีการเข้าสู่ระบบจากอุปกรณ์ใหม่" }
+        ];
+
+        // ฟังก์ชันในการแสดงการแจ้งเตือน
+        function displayNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            notifications.forEach(notification => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('notification-item');
+                listItem.innerHTML = `
+                    <h4>${notification.title}</h4>
+                    <p>${notification.message}</p>
+                `;
+                notificationList.appendChild(listItem);
+            });
+        }
+
+        // เรียกฟังก์ชันเพื่อแสดงข้อมูล
+        displayNotifications();
+    </script>
+</body>
+</html>

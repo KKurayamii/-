@@ -1,0 +1,49 @@
+{% block content %}
+  <div style="max-width: 900px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+    <h2 style="text-align: center; color: #333;">รายการแจ้งเตือนทั้งหมด</h2>
+
+    <!-- ฟิลเตอร์ดูตามสมาชิก -->
+    <form method="GET" style="margin-bottom: 20px;">
+      <label for="user" style="font-size: 16px;">เลือกสมาชิก:</label>
+      <select name="user" onchange="this.form.submit()" style="padding: 5px; margin-left: 10px; font-size: 14px;">
+        <option value="">-- ทั้งหมด --</option>
+        {% for user in users %}
+          <option value="{{ user.id }}" {% if request.GET.user == user.id|stringformat:"s" %}selected{% endif %}>
+            {{ user.username }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+
+    <!-- ตารางแจ้งเตือน -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <thead>
+        <tr style="background-color: #f4f4f4; text-align: left;">
+          <th style="padding: 10px; border: 1px solid #ddd;">ชื่อสมาชิก</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">หัวข้อ</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">ข้อความ</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">วันที่แจ้งเตือน</th>
+          <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">การจัดการ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for notification in notifications %}
+          <tr style="background-color: #fff; border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ notification.user.username }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ notification.title }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ notification.message }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">{{ notification.schedule_time }}</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+              <a href="{% url 'admin_notification_update' notification.id %}" style="padding: 5px 10px; background-color: #FFC107; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Edit</a>
+              <a href="{% url 'admin_notification_delete' notification.id %}" style="padding: 5px 10px; background-color: #F44336; color: white; text-decoration: none; border-radius: 5px; margin: 0 5px;">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="text-align: center;">
+      <a href="{% url 'admin_notification_create' %}" style="padding: 10px 20px; background-color: #004AAD; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;">เพิ่มแจ้งเตือนใหม่</a>
+    </div>
+  </div>
+{% endblock %}
