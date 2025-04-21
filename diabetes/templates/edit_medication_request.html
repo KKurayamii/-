@@ -1,0 +1,113 @@
+{% extends 'base_user.html' %}
+
+{% block content %}
+
+<div class="edit-form-container">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset>
+            <certer><legend>แก้ไขคำขอแจ้งเตือนยา</legend></certer>
+
+            <label for="medication_name">ประเภทการแจ้งเตือน:</label>
+            <select id="medication_name" name="medication_name" required>
+                <option value="" disabled>-- กรุณาเลือก --</option>
+                <option value="medication" {% if form.medication_name.value == "medication" %}selected{% endif %}>
+                    แจ้งเตือนการทานยา
+                </option>
+                <option value="appointment" {% if form.medication_name.value == "appointment" %}selected{% endif %}>
+                    แจ้งเตือนการนัดหมายสุขภาพ
+                </option>
+            </select>
+
+            <label for="message">ข้อความเพิ่มเติม:</label>
+            <textarea id="message" name="message" rows="3" required>{{ form.message.value }}</textarea>
+
+            <label for="date_sent">วันที่ส่งแจ้งเตือน:</label>
+            <input type="datetime-local" id="date_sent" name="date_sent" value="{{ form.date_sent.value }}" required>
+
+            <button type="submit">บันทึกการเปลี่ยนแปลง</button>
+        </fieldset>
+    </form>
+</div>
+
+<style>
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    .edit-form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+    }
+
+    fieldset {
+        border: none;
+    }
+
+    legend {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    select, textarea, input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        margin-top: 10px;
+    }
+
+    .checkbox-container input {
+        margin-right: 8px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+{% endblock %}

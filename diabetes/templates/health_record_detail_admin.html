@@ -1,32 +1,36 @@
+{% extends 'base_admin.html' %}
 {% block content %}
-  <div style="max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
-    <h1 style="text-align: center; color: #333;">Health Record - {{ record.user.username }}</h1>
+  <div style="max-width: 900px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; color: #333;">บันทึกสุขภาพ - {{ record.user.username }}</h1>
 
-    <div style="margin-bottom: 15px;">
-      <p><strong>Blood Pressure:</strong> {{ record.blood_pressure }}</p>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <p><strong>Weight:</strong> {{ record.weight }}</p>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <p><strong>Height:</strong> {{ record.height }}</p>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <p><strong>BMI:</strong> {{ record.bmi }}</p>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <p><strong>Insulin:</strong> {{ record.insulin }}</p>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <p><strong>Fasting Blood Sugar:</strong> {{ record.fasting_blood_sugar }}</p>
-    </div>
-    <div style="margin-bottom: 15px;">
-      <p><strong>Last Visit:</strong> {{ record.last_visit_date }}</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between;">
+      <div style="width: 48%;"><strong>ความดันโลหิต:</strong> {{ record.blood_pressure }} mmHg</div>
+      <div style="width: 48%;"><strong>น้ำหนัก:</strong> {{ record.weight }} กก.</div>
+      <div style="width: 48%;"><strong>ส่วนสูง:</strong> {{ record.height }} ซม.</div>
+      <div style="width: 48%;"><strong>BMI:</strong> {{ record.bmi }}</div>
+      <div style="width: 48%;"><strong>ระดับอินซูลิน:</strong> {{ record.insulin }}</div>
+      <div style="width: 48%;"><strong>น้ำตาลในเลือดขณะอดอาหาร:</strong> {{ record.fasting_blood_sugar }}</div>
+      <div style="width: 48%;"><strong>น้ำตาลในเลือดหลังอาหาร:</strong> {{ record.postprandial_blood_sugar }}</div>
+      <div style="width: 48%;"><strong>HbA1c:</strong> {{ record.hba1c }}</div>
+      <div style="width: 48%;"><strong>BUN:</strong> {{ record.bun }}</div>
+      <div style="width: 48%;"><strong>Creatinine (Cr):</strong> {{ record.cr }}</div>
+      <div style="width: 48%;"><strong>eGFR:</strong> {{ record.egfr }}</div>
+      <div style="width: 48%;"><strong>ไตรกลีเซอไรด์:</strong> {{ record.triglycerides }}</div>
+      <div style="width: 48%;"><strong>คอเลสเตอรอล:</strong> {{ record.cholesterol }}</div>
+      <div style="width: 48%;"><strong>HDL:</strong> {{ record.hdl }}</div>
+      <div style="width: 48%;"><strong>LDL:</strong> {{ record.ldl }}</div>
+      <div style="width: 48%;"><strong>โปรตีนอัลบูมินในปัสสาวะ:</strong> {{ record.albumin_in_urine }}</div>
+      <div style="width: 100%;"><strong>ผลตรวจ EKG:</strong> {{ record.ekg }}</div>
+      <div style="width: 100%;"><strong>ผลเอกซเรย์ปอด:</strong> {{ record.chest_x_ray }}</div>
+      <div style="width: 100%;"><strong>ผลคัดกรองจอประสาทตา:</strong> {{ record.diabetic_retinopathy_screening }}</div>
+      <div style="width: 100%;"><strong>ผลตรวจเท้าสำหรับผู้ป่วยเบาหวาน:</strong> {{ record.diabetic_foot_screening }}</div>
+      <div style="width: 48%;"><strong>วันที่บันทึก:</strong> {{ record.date_recorded }}</div>
+      <div style="width: 48%;"><strong>วันนัดครั้งสุดท้าย:</strong> {{ record.last_visit_date }}</div>
     </div>
 
     <div style="text-align: center; margin-top: 30px;">
-      <a href="{% url 'health_record_edit_admin' record.id %}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 0 10px;">Edit</a>
-      <a href="{% url 'health_record_delete_admin' record.id %}" style="padding: 10px 20px; background-color: #F44336; color: white; text-decoration: none; border-radius: 5px; margin: 0 10px;">Delete</a>
+      <a href="{% url 'health_record_edit_admin' record.id %}" style="padding: 12px 24px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; margin: 0 10px; display: inline-block;">แก้ไข</a>
+      <a href="{% url 'health_record_delete_admin' record.id %}" style="padding: 12px 24px; background-color: #F44336; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; margin: 0 10px; display: inline-block;">ลบ</a>
     </div>
   </div>
 {% endblock %}

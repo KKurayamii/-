@@ -1,3 +1,7 @@
+{% extends 'base_user.html' %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -17,7 +21,7 @@
             background: white;
             padding: 20px;
             margin: auto;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
 
@@ -29,27 +33,75 @@
             margin-bottom: 15px;
         }
 
+        /* Tab styles */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            border-radius: 5px 5px 0 0;
+            background-color: #f2f2f2;
+            transition: background-color 0.3s;
+        }
+
+        .tab:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+        .styled-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 20px auto; /* ทำให้ตารางอยู่กึ่งกลาง */
+    font-size: 1em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
 
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 12px 15px;
             text-align: left;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #007bff;
+            color: white;
         }
 
         .back-btn {
             display: block;
             text-align: center;
             margin-top: 20px;
-            padding: 10px;
+            padding: 12px 15px;
             background: #007bff;
             color: white;
             border: none;
@@ -61,42 +113,148 @@
         .back-btn:hover {
             background: #0056b3;
         }
+
+        td[colspan="6"] {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>ประวัติการบันทึก</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ลำดับ</th>
-                    <th>วันที่บันทึก</th>
-                    <th>ความดันโลหิต</th>
-                    <th>น้ำหนัก (kg)</th>
-                    <th>ส่วนสูง (cm)</th>
-                    <th>BMI</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in records %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ record.date_recorded|date:"d/m/Y H:i" }}</td>
-                    <td>{{ record.blood_pressure }}</td>
-                    <td>{{ record.weight }}</td>
-                    <td>{{ record.height }}</td>
-                    <td>{{ record.bmi }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" style="text-align: center;">ไม่มีข้อมูลการบันทึก</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <div class="tab active" onclick="openTab(event, 'general')">ข้อมูลทั่วไป</div>
+            <div class="tab" onclick="openTab(event, 'medical')">ค่าทางชีวเคมี</div>
+            <div class="tab" onclick="openTab(event, 'test')">การตรวจเพิ่มเติม</div>
+        </div>
 
-        <a href="{% url 'health_record1' %}" class="back-btn">กลับไปบันทึกข้อมูล</a>
-    </div>
+        <!-- Tab Content -->
+        <div id="general" class="tab-content active">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>วันที่บันทึก</th>
+                        <th>น้ำหนัก (Weight)</th>
+                        <th>ส่วนสูง (Height)</th>
+                        <th>ดัชนีมวลกาย (BMI)</th>
+                        <th>ความดันโลหิต (Blood Pressure)</th>
+                        <th>อินซูลิน (Insulin)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ record.date_recorded|date:"d/m/Y H:i" }}</td>
+                        <td>{{ record.weight }}</td>
+                        <td>{{ record.height }}</td>
+                        <td>{{ record.bmi }}</td>
+                        <td>{{ record.blood_pressure }}</td>
+                        <td>{{ record.insulin }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">ไม่มีข้อมูลการบันทึก</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="medical" class="tab-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ระดับน้ำตาลก่อนอาหาร (Fasting Blood Sugar)</th>
+                        <th>ระดับน้ำตาลหลังอาหาร (Postprandial Blood Sugar)</th>
+                        <th>วันที่พบแพทย์ล่าสุด</th>
+                        <th>ค่าน้ำตาลในเลือดเฉลี่ยสะสม (HbA1c)</th>
+                        <th>ไนโตรเจนยูเรียในเลือด (BUN)</th>
+                        <th>ค่าครีเอตินินในเลือด (Creatinine)</th>
+                        <th>อัตราการกรองของไตโดยประมาณ (eGFR)</th>
+                        <th>ระดับไตรกลีเซอไรด์ในเลือด (Triglycerides)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.fasting_blood_sugar }}</td>
+                        <td>{{ record.postprandial_blood_sugar }}</td>
+                        <td>{{ record.last_visit_date|date:'Y-m-d\TH:i' }}</td>
+                        <td>{{ record.hba1c }}</td>
+                        <td>{{ record.bun }}</td>
+                        <td>{{ record.cr }}</td>
+                        <td>{{ record.egfr }}</td>
+                        <td>{{ record.triglycerides }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">ไม่มีข้อมูลการบันทึก</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="test" class="tab-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ระดับคอเลสเตอรอลในเลือด (Cholesterol)</th>
+                        <th>คอเลสเตอรอลชนิดดี (HDL)</th>
+                        <th>คอเลสเตอรอลชนิดไม่ดี (LDL)</th>
+                        <th>ระดับโปรตีนในปัสสาวะ (Albumin in Urine)</th>
+                        <th>การตรวจคลื่นไฟฟ้าหัวใจ (EKG)</th>
+                        <th>เอกซเรย์ปอด (Chest X-Ray)</th>
+                        <th>ตรวจจอประสาทตา (Diabetic Retinopathy Screening)</th>
+                        <th>ตรวจเท้าผู้ป่วยเบาหวาน (Diabetic Foot Screening)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.cr }}</td>
+                        <td>{{ record.hdl }}</td>
+                        <td>{{ record.ldl }}</td>
+                        <td>{{ record.albumin_in_urine }}</td>
+                        <td>{{ record.ekg }}</td>
+                        <td>{{ record.chest_x_ray }}</td>
+                        <td>{{ record.diabetic_retinopathy_screening }}</td>
+                        <td>{{ record.diabetic_foot_screening }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">ไม่มีข้อมูลการบันทึก</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
 </body>
 </html>
+
+     {% endblock %}

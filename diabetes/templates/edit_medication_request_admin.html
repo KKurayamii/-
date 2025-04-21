@@ -1,0 +1,47 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+  <div style="max-width: 600px; margin: 30px auto; padding: 20px; border-radius: 10px; background-color: #e3f2fd; font-family: Arial, sans-serif; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);">
+
+    <h1 style="text-align: center; color: #000000; font-size: 22px; font-weight: bold;">แก้ไขการแจ้งเตือนของสมาชิก</h1>
+
+    <form method="POST" style="margin-top: 20px;">
+      {% csrf_token %}
+
+      <label style="font-weight: bold; color: #000000;">ประเภทการแจ้งเตือน:</label>
+      <div style="margin-bottom: 15px; padding: 10px; background: #ffffff; border-radius: 5px; border: 1px solid #ccc;">
+        <input type="radio" id="medication_reminder" name="medication_name" value="แจ้งเตือนทานยา" onclick="updateMedicationName(this.value)" checked>
+        <label for="medication_reminder" style="cursor: pointer; margin-right: 15px;">แจ้งเตือนทานยา</label>
+
+        <input type="radio" id="health_appointment" name="medication_name" value="แจ้งเตือนการนัดสุขภาพ" onclick="updateMedicationName(this.value)">
+        <label for="health_appointment" style="cursor: pointer;">แจ้งเตือนการนัดสุขภาพ</label>
+      </div>
+
+      <input type="hidden" id="medication_name" name="medication_name" value="แจ้งเตือนทานยา">
+
+   <label for="message" style="font-weight: bold; color: #000000;">ข้อความ:</label>
+<textarea id="message" name="message" style="width: 100%; max-width: 600px; height: 50px; resize: none;">{{ form.message.value|default:'' }}</textarea>
+        <br>
+      <label for="date_sent" style="font-weight: bold; color: #000000;">วันที่ส่ง:</label>
+      {{ form.date_sent }}
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button type="submit" style="padding: 10px 20px; background-color: #0288d1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+          บันทึกการเปลี่ยนแปลง
+        </button>
+      </div>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="{% url 'medication_request_list' %}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+        กลับไปที่รายการ
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function updateMedicationName(value) {
+      document.getElementById("medication_name").value = value;
+    }
+  </script>
+{% endblock %}

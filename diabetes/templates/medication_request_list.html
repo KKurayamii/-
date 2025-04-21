@@ -1,0 +1,52 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+  <div style="max-width: 900px; margin: 30px auto; padding: 20px; border-radius: 10px; background-color: #e3f2fd; font-family: Arial, sans-serif; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);">
+
+    <h1 style="text-align: center; color: #0d47a1; font-size: 24px; font-weight: bold;">จัดการการแจ้งเตือนของสมาชิก</h1>
+
+    <table style="width: 100%; border-collapse: collapse; background-color: white; border-radius: 8px; overflow: hidden;">
+      <thead style="background-color: #1976d2; color: white;">
+        <tr>
+          <th style="padding: 12px; text-align: left;">ผู้ใช้</th>
+          <th style="padding: 12px; text-align: left;"> การแจ้งเตือน</th>
+          <th style="padding: 12px; text-align: left;"> ข้อความเพิ่มเติม</th>
+          <th style="padding: 12px; text-align: left;"> วันที่ส่ง</th>
+          <th style="padding: 12px; text-align: center;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in page_obj %}
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;">{{ request.user.username }}</td>
+            <td style="padding: 10px;">{{ request.medication_name }}</td>
+            <td style="padding: 10px;">{{ request.message }}</td>
+            <td style="padding: 10px;">{{ request.date_sent }}</td>
+            <td style="padding: 10px; text-align: center;">
+              <a href="{% url 'edit_medication_request_admin' request.id %}" style="padding: 6px 12px; background-color: #0288d1; color: white; text-decoration: none; border-radius: 5px;">แก้ไข</a>
+              <a href="{% url 'delete_medication_request_admin' request.id %}" onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบคำขอนี้?');" style="padding: 6px 12px; background-color: #d32f2f; color: white; text-decoration: none; border-radius: 5px;">ลบ</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Paginator -->
+    <div style="text-align: center; margin-top: 20px;">
+      <span style="font-size: 16px; color: #0d47a1;">
+        {% if page_obj.has_previous %}
+          <a href="?page=1" style="text-decoration: none; color: #1565c0;">หน้าแรก</a> |
+          <a href="?page={{ page_obj.previous_page_number }}" style="text-decoration: none; color: #1565c0;">ก่อนหน้า</a>
+        {% endif %}
+
+        <span style="margin: 0 10px;">หน้า {{ page_obj.number }} จาก {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" style="text-decoration: none; color: #1565c0;">ถัดไป</a> |
+          <a href="?page={{ page_obj.paginator.num_pages }}" style="text-decoration: none; color: #1565c0;">หน้าสุดท้าย</a>
+        {% endif %}
+      </span>
+    </div>
+
+  </div>
+{% endblock %}

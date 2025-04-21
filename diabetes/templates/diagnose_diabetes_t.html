@@ -2,13 +2,115 @@
 
 {% block content %}
 <body>
-    <h2>วินิจฉัยความเสี่ยงของเบาหวาน</h2>
-    <form method="POST" action="{% url 'result_t' %}">
+    <h2 class="title">วินิจฉัยความเสี่ยงของเบาหวาน</h2>
+    <form method="POST" action="{% url 'result_t' %}" class="container">
         {% csrf_token %}
+        <style>
+            /* ตั้งค่าพื้นฐาน */
+            body {
+                font-family: 'Sarabun', sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 20px;
+            }
+
+            /* คอนเทนเนอร์หลัก */
+            .container {
+                max-width: 800px;
+                background: white;
+                padding: 20px;
+                margin: 100px auto;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+            }
+
+            /* หัวข้อ */
+            .title {
+                text-align: center;
+                color: #333;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            /* การตั้งค่า form-group */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+
+            }
+
+            .form-group label {
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #555;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+                background: #f5f5f5;
+            }
+
+            .button-container {
+                display: flex;
+                justify-content: space-between; /* ให้ปุ่มอยู่ห่างกัน */
+                gap: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+            }
+
+            .submit-btn, .reset-btn {
+                width: 48%; /* ปรับความกว้างของปุ่มให้มีขนาดพอเหมาะ */
+                padding: 12px;
+                font-size: 18px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            .submit-btn {
+                background: #004AAD;
+                color: white;
+            }
+
+            .submit-btn:hover {
+                background: #003366;
+            }
+
+            .reset-btn {
+                background: #f0f0f0;
+                color: #555;
+                border: 1px solid #ccc;
+            }
+            .reset-btn:hover {
+                background: #e2e2e2;
+            }
+            .info-button {
+            border: none;
+            background: transparent;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            position: absolute;
+            right: 280px;
+            margin-left: 10px; /* เพิ่มระยะห่างระหว่างช่องกรอกและปุ่ม */
+            margin-top: 22px; /* ขยับปุ่มให้ลงมาจากช่องกรอก */
+        }
+        input[type="text"], input[type="number"], input[type="datetime-local"], select {
+            width: 95%;          /* ขยายช่องกรอกให้ยาวเต็มพื้นที่ */
+            padding: 3px;         /* เพิ่มพื้นที่ในช่องกรอก */
+            box-sizing: border-box; /* ให้ช่องกรอกรวมขนาดกรอบและ padding */
+        }
+        </style>
+
+        <!-- ฟอร์มข้อมูลต่างๆ -->
         <fieldset>
             <legend>คำนวณ ค่าดัชนีมวลกาย (BMI)</legend>
             <div class="form-group">
-                <label>น้ำหนัก (Weight)<span style="color: red;">*</span>:</label>
+                <label for="weight">น้ำหนัก (Weight)<span style="color: red;">*</span>:</label>
                 <input type="number" id="weight" step="0.1" required placeholder="น้ำหนักเป็นกิโลกรัม"
                     data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
                 <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกน้ำหนักเป็นกิโลกรัม">
@@ -26,18 +128,18 @@
             </div>
 
             <div class="form-group">
-    <input type="text" name="BMI" id="bmi" value="{{ last_record11.bmi }}" required readonly
-        placeholder="ผลลัพธิ์การคำนวนจากน้ำหนักและส่วนสูง"
-        title="ค่าผลลัพธิ์ดัชนีมวลกาย จะปรากฎค่าเมื่อมีการกรอกน้ำหนักและส่วนสูง"
-        data-bs-toggle="tooltip" data-bs-placement="top" style="display: none;" />
-</div>
+                <input type="text" name="BMI" id="bmi" value="{{ last_record11.bmi }}" required readonly
+                       placeholder="ผลลัพธิ์การคำนวนจากน้ำหนักและส่วนสูง"
+                       title="ค่าผลลัพธิ์ดัชนีมวลกาย จะปรากฎค่าเมื่อมีการกรอกน้ำหนักและส่วนสูง"
+                       data-bs-toggle="tooltip" data-bs-placement="top" style="display: none;" />
+            </div>
         </fieldset>
 
-        <div class="form-group">
+             <div class="form-group">
             <label>อายุ (Age)<span style="color: red;">*</span>:</label>
             <input type="number" name="Age" value="{{ last_record11.age }}" required placeholder="อายุของบุคคล (ปี)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-               <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกอายุของบุคคล เช่น 16 หรือ 18 ปีเป็นต้น">
+               <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกอายุของบุคคล เช่น 16 หรือ 18 ปีเป็นต้น">
                 <i class="fa fa-question-circle"></i>
             </button>
         </div>
@@ -47,7 +149,7 @@
             <input type="number" name="Pregnancies" value="{{ last_record11.pregnancies }}" required
                 placeholder="จำนวนครั้งที่เคยตั้งครรภ์ต่อครั้ง (หากแท้งจะไม่นับ)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-               <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกจำนวนการตั้งครรภ์ของบุคคล เช่น 0 หรือ 2 ครั้งเป็นต้น (หากแท้งจะไม่นับ)">
+               <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกจำนวนการตั้งครรภ์ของบุคคล เช่น 0 หรือ 2 ครั้งเป็นต้น (หากแท้งจะไม่นับ)">
                 <i class="fa fa-question-circle"></i>
             </button>
         </div>
@@ -57,7 +159,7 @@
             <input type="number" name="Glucose" value="{{ last_record11.glucose }}" required
                 placeholder="ระดับน้ำตาลในเลือด (mg/dL)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอการะดับน้ำตาลขณะอดอาหาร 2 ชมของบุคคล เช่น 30 mg/dL หรือ 60 mg/dL เป็นต้น">
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าระดับน้ำตาลขณะอดอาหาร 2 ชมของบุคคล เช่น 30 mg/dL หรือ 60 mg/dL เป็นต้น">
                 <i class="fa fa-question-circle"></i>
             </button>
         </div>
@@ -67,8 +169,8 @@
             <input type="number" name="Insulin" value="{{ last_record11.insulin }}"
                    placeholder="ค่าระดับอินซูลิน (mu U/ml)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-              <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกค่าระดับอินซูลิน เช่น 30 mu U/ml หรือ 60 mu U/ml เป็นต้น
-              **อินซูลิน คือ ฮอร์โมนอินซูลิน โดยเป็นฮอร์โมนที่ผลิตโดยตับอ่อนและมีบทบาทในการควบคุมระดับน้ำตาลในเลือด**">
+              <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="กรอกค่าระดับอินซูลิน เช่น 30 mu U/ml หรือ 60 mu U/ml เป็นต้น <br><br>
+    (อินซูลิน คือ ฮอร์โมนอินซูลิน โดยเป็นฮอร์โมนที่ผลิตโดยตับอ่อนและมีบทบาทในการควบคุมระดับน้ำตาลในเลือด)">
                 <i class="fa fa-question-circle"></i>
             </button>
         </div>
@@ -78,7 +180,8 @@
             <input type="number" name="BloodPressure" value="{{ last_record11.blood_pressure }}" required
                 placeholder="ค่าความดันโลหิต (mmHg)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกค่าความดันโลหิต เช่น 60 mmHg หรือ 80 mmHg เป็นต้น">
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="กรอกค่าความดันโลหิต เช่น 60 mmHg หรือ 80 mmHg เป็นต้น <br><br>
+    (ค่าความดันโลหิตนี้เป็นในรูปแบบของดันโลหิตไดแอสโตลิก (DBP) ตามมาตรฐาน คือ ค่าความดันโลหิตขณะหัวใจคลายตัว หรือระหว่างการเต้นของหัวใจ)">
                 <i class="fa fa-question-circle"></i>
             </button>
         </div>
@@ -87,18 +190,18 @@
             <label>ความหนาของผิวหนัง (SkinThickness)<span style="color: red;">*</span>:</label>
             <input type="number" name="SkinThickness" value="{{ last_record11.skin_thickness }}" placeholder="ค่าความหนาของผิวหนัง (mm)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกค่าความหนาของผิวหนัง เช่น 10 mm หรือ 20 mm เป็นต้น">
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าความหนาของผิวหนัง เช่น 10 mm หรือ 20 mm เป็นต้น">
                 <i class="fa fa-question-circle"></i>
             </button>
         </div>
 
         <fieldset>
-            <legend>คำนวณ ค่าพันธุกรรมของโรคเบาหวาน  (DPF)</legend>
+            <legend>คำนวณ ค่าดัชนีความเสี่ยงทางพันธุกรรมต่อโรคเบาหวาน  (DPF)</legend>
             <div class="form-group">
                 <label>จำนวนญาติที่เป็นเบาหวาน<span style="color: red;">*</span>:</label>
                 <input type="number" id="relatives_with_diabetes" required placeholder="จำนวนญาติที่มีประวัติเป็นโรคเบาหวาน"
                     data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-                  <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกจำนวนญาติที่มีประวัติเป็นโรคเบาหวาน เช่น 0 หรือ 2 เป็นต้น">
+                  <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกจำนวนญาติที่มีประวัติเป็นโรคเบาหวาน เช่น 0 หรือ 2 เป็นต้น">
                 <i class="fa fa-question-circle"></i>
             </button>
             </div>
@@ -107,7 +210,7 @@
                 <label>จำนวนญาติทั้งหมด<span style="color: red;">*</span>:</label>
                 <input type="number" id="total_relatives" required placeholder="จำนวนญาติทั้งหมด (รวมตัวเอง)"
                     data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-                <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกจำนวนญาติทั้งหมด (รวมตัวเอง) เช่น 0 หรือ 2 เป็นต้น">
+                <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกจำนวนญาติทั้งหมด (รวมตัวเอง) เช่น 0 หรือ 2 เป็นต้น">
                 <i class="fa fa-question-circle"></i>
             </button>
             </div>
@@ -120,9 +223,14 @@
             </div>
         </fieldset>
 
-        <button type="reset" class="reset-button">รีเซ็ต</button>
-        <button type="submit" class="submit-button">วินิจฉัย</button>
+         <div class="button-container">
+            <button type="reset" class="reset-btn">รีเซ็ต</button>
+            <button type="submit" class="submit-btn">วินิจฉัย</button>
+        </div>
     </form>
+</body>
+
+
 
 
 <script>

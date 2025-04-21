@@ -54,156 +54,231 @@
         background-color: #007bff;
         color: white;
     }
+    /* ปรับให้การ์ดมีความสวยงามมากขึ้น */
+.card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* การเคลื่อนที่ขึ้นเมื่อ hover */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.highlight {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #007bff;
+}
+
+/* ปรับสไตล์ alert ให้น่าสนใจ */
+.alert {
+    border-radius: 5px;
+    font-size: 1rem;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* ปรับสไตล์บทความ */
+.article-card {
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.article-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* กราฟ */
+canvas {
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ปรับช่องว่างระหว่างการ์ด */
+.row {
+    margin-top: 20px;
+}
+/* สร้างสีแดงที่เป็นไปตามที่ต้องการ */
+.bg-custom-danger {
+    color: #ff0000; /* ตัวอักษรเป็นสีขาว */
+}
+
+.bg-custom-success {
+    color: #28a745;
+}
+
+.bg-custom-warning {
+    background-color: #ffc107; /* สีเหลืองเตือน */
+    color: black;
+}
+
 </style>
 
 
-        <!-- Health Record Section -->
-        <div class="card shadow-lg mb-4 rounded border-0">
-            <div class="card-body">
-                <h2 class="h4 text-primary">ข้อมูลสุขภาพประจำวันที่ {{ health_record1.date_recorded }}</h2>
+<div class="card shadow-lg mb-4 rounded border-0">
+        <div class="card-body">
+            <center><h2 class="h2 text-primary">บันทึกข้อมูลสุขภาพครั้งล่าสุดวันที่ {{ health_record1.date_recorded }}</h2></center>
+                </div>
+    </div>
 
-                {% if health_record_today %}
-                    <div class="health-record">
-                        <p><strong>Fasting Blood Glucose:</strong>
-                            <span class="{% if health_record_today.fasting_blood_sugar > 140 %}text-danger{% else %}text-success{% endif %}">
-                                {{ health_record_today.fasting_blood_sugar }} mg/dL
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">น้ำหนัก , ส่วนสูง , ดัชนีย์มวลกาย<br>
+                    (Weight) , (Height) , (BMI)</h5>
+                    {% if health_record1 %}
+                        <p>น้ำหนัก:
+                            <span class="badge {% if health_record1.weight < 50 %}bg-custom-danger{% elif health_record1.weight >= 50 and health_record1.weight < 80 %}bg-custom-success{% else %}bg-custom-danger{% endif %}">
+                                {{ health_record1.weight }} กก.
                             </span>
+                            {% if health_record1.weight < 50 %}
+                                <span class="text-red">(น้ำหนักน้อยเกินเกณฑ์)</span>
+                            {% elif health_record1.weight >= 80 %}
+                                <span class="text-red">(น้ำหนักเกินเกณฑ์)</span>
+                            {% endif %}
                         </p>
-                        <p><strong>Postprandial Blood Glucose:</strong>
-                            <span class="{% if health_record_today.postprandial_blood_sugar > 200 %}text-danger{% else %}text-success{% endif %}">
-                                {{ health_record_today.postprandial_blood_sugar }} mg/dL
+                        <p>ส่วนสูง: <span class="font-weight-bold">{{ health_record1.height }} ซม.</span></p>
+                        <p>BMI:
+                            <span class="badge {% if health_record1.bmi < 18.5 %}bg-custom-danger{% elif health_record1.bmi >= 18.5 and health_record1.bmi < 25 %}bg-custom-success{% elif health_record1.bmi >= 25 and health_record1.bmi < 30 %}bg-warning{% else %}bg-custom-danger{% endif %}">
+                                {{ health_record1.bmi|floatformat:2 }}
                             </span>
-                        </p>
-                        <p><strong>Insulin Level:</strong>
-                            <span class="{% if health_record1.insulin > 25 %}text-danger{% else %}text-success{% endif %}">
-                                {{ health_record_today.insulin }} U/mL
-                            </span>
-                        </p>
-                        <p><strong>BMI:</strong>
-                            <span class="{% if health_record1.bmi > 30 %}text-danger{% else %}text-success{% endif %}">
-                                {{ health_record_today.bmi }}
-                            </span>
-                        </p>
-
-                        <!-- Risk Notifications -->
-                        {% if health_record_today.fasting_blood_sugar > 140 %}
-                            <div class="alert alert-warning">⚠️ ระดับน้ำตาลสูงกว่าปกติ!</div>
-                        {% endif %}
-                        {% if health_record_today.postprandial_blood_sugar > 200 %}
-                            <div class="alert alert-warning">⚠️ ระดับน้ำตาลหลังอาหารสูงกว่าปกติ!</div>
-                        {% endif %}
-                        {% if health_record_today.insulin > 25 %}
-                            <div class="alert alert-warning">⚠️ ระดับอินซูลินสูงกว่าปกติ!</div>
-                        {% endif %}
-                        {% if health_record_today.bmi > 30 %}
-                            <div class="alert alert-warning">⚠️ BMI สูงกว่าปกติ!</div>
-                        {% endif %}
-                    </div>
-                    <!-- Example Link to Another Page -->
-                    <div class="mt-4">
-                        <a href="{% url 'health_record1' %}" class="btn btn-primary btn-lg w-100">ไปที่หน้ารายละเอียดสุขภาพเพิ่มเติม</a>
-                    </div>
-
-                {% else %}
-                    <p>ไม่มีข้อมูลสุขภาพวันนี้</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Dashboard Information -->
-        <div class="row mb-4">
-            <!-- Weight, Height, BMI Card -->
-            <div class="col-md-4">
-                <div class="card shadow-lg border-0 rounded">
-                    <div class="card-body">
-                        <h5 class="card-title text-dark">น้ำหนัก, ส่วนสูง, BMI</h5>
-
-                        {% if health_record1 %}
-                            <p>น้ำหนัก: <span class="highlight">{{ health_record1.weight }} กก.</span></p>
-                            <p>ส่วนสูง: <span class="highlight">{{ health_record1.height }} ซม.</span></p>
-                            <p>BMI: <span class="highlight">{{ health_record1.bmi }}</span></p>
-
                             {% if health_record1.bmi < 18.5 %}
-                                <div class="alert alert-danger">⚠️ น้ำหนักน้อยเกินไป (BMI ต่ำกว่า 18.5)</div>
-                            {% elif health_record1.bmi >= 18.5 and health_record1.bmi < 25 %}
-                                <div class="alert alert-success">✅ น้ำหนักปกติ</div>
-                            {% elif health_record1.bmi >= 25 and health_record1.bmi < 30 %}
-                                <div class="alert alert-warning">⚠️ น้ำหนักเกิน (BMI 25-29.9)</div>
-                            {% else %}
-                                <div class="alert alert-danger">⚠️ อ้วน (BMI 30 หรือมากกว่า)</div>
+                                <span class="text-red">(น้ำหนักน้อยเกินเกณฑ์ / BMI ต่ำกว่า 18.5)</span>
+                            {% elif health_record1.bmi >= 25 %}
+                                <span class="text-red">(น้ำหนักเกินเกณฑ์ / BMI 25 หรือมากกว่า)</span>
                             {% endif %}
+                        </p>
 
-                            <!-- BMI Progress Chart -->
-                            <canvas id="bmiProgressChart" width="400" height="400"></canvas>
-
-                        {% else %}
-                            <p>ไม่มีข้อมูลที่บันทึก</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blood Sugar Cards with Pie Chart -->
-            <div class="col-md-4">
-                <div class="card shadow-lg border-0 rounded">
-                    <div class="card-body">
-                        <h5 class="card-title text-dark">ระดับน้ำตาลในเลือด</h5>
-
-                        {% if health_record1 %}
-                            <p>ก่อนอาหาร: <span class="highlight">{{ health_record1.fasting_blood_sugar }} mg/dL</span></p>
-                            {% if health_record1.fasting_blood_sugar < 70 %}
-                                <div class="alert alert-danger">⚠️ น้ำตาลในเลือดต่ำ</div>
-                            {% elif health_record1.fasting_blood_sugar >= 70 and health_record1.fasting_blood_sugar <= 100 %}
-                                <div class="alert alert-success">✅ น้ำตาลในเลือดปกติ</div>
-                            {% else %}
-                                <div class="alert alert-warning">⚠️ น้ำตาลสูงกว่าปกติ</div>
-                            {% endif %}
-
-                              <!-- น้ำตาลหลังอาหาร -->
-                <p>หลังอาหาร: <span class="highlight">{{ health_record1.postprandial_blood_sugar }} mg/dL</span></p>
-                {% if health_record1.postprandial_blood_sugar < 70 %}
-                    <div class="alert alert-danger">⚠️ น้ำตาลหลังอาหารต่ำ</div>
-                {% elif health_record1.postprandial_blood_sugar < 140 %}
-                    <div class="alert alert-success">✅ น้ำตาลหลังอาหารปกติ</div>
-                {% elif health_record1.postprandial_blood_sugar >= 140 and health_record1.postprandial_blood_sugar <= 180 %}
-                    <div class="alert alert-warning">⚠️ น้ำตาลหลังอาหารสูงกว่าปกติ</div>
+                    <!-- BMI Progress Chart -->
+                    <canvas id="bmiProgressChart" width="400" height="400"></canvas>
                 {% else %}
-                    <div class="alert alert-danger">⚠️ น้ำตาลหลังอาหารสูงมาก</div>
+                    <p class="text-muted">ไม่มีข้อมูลที่บันทึก</p>
                 {% endif %}
-
-                            <!-- Blood Sugar Pie Chart -->
-                            <canvas id="bloodSugarPieChart" width="400" height="400"></canvas>
-                        {% else %}
-                            <p>ไม่มีข้อมูลที่บันทึก</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blood Pressure Card -->
-            <div class="col-md-4">
-                <div class="card shadow-lg border-0 rounded">
-                    <div class="card-body">
-                        <h5 class="card-title text-dark">ความดันโลหิต (DBP)</h5>
-                        {% if health_record1.blood_pressure %}
-                            <p>ความดันโลหิต: <span class="highlight">{{ health_record1.blood_pressure }} mmHg</span></p>
-                            {% if health_record1.blood_pressure < 60 %}
-                                <div class="alert alert-danger">⚠️ ความดันโลหิตต่ำ</div>
-                            {% elif health_record1.blood_pressure >= 60 and health_record1.blood_pressure <= 80 %}
-                                <div class="alert alert-success">✅ ความดันโลหิตปกติ</div>
-                            {% else %}
-                                <div class="alert alert-warning">⚠️ ความดันโลหิตสูง</div>
-                            {% endif %}
-
-                            <!-- Blood Pressure Chart -->
-                            <canvas id="bloodPressureChart" width="400" height="400"></canvas>
-                        {% else %}
-                            <p>ไม่มีข้อมูลที่บันทึก</p>
-                        {% endif %}
-                    </div>
-                </div>
             </div>
         </div>
+    </div>
+<div class="col-md-4">
+    <div class="card shadow-lg border-0 rounded h-100">
+        <div class="card-body">
+            <h5 class="card-title text-dark font-weight-bold">ระดับน้ำตาลในเลือด (bloodSugar)</h5>
+            {% if health_record1 %}
+              <!-- ก่อนอาหาร -->
+<p>ก่อนอาหาร:
+    <span class="badge {% if health_record1.fasting_blood_sugar < 70 %}bg-custom-danger
+                      {% elif health_record1.fasting_blood_sugar > 99 %}bg-custom-danger
+                      {% else %}bg-custom-success{% endif %}">
+        {{ health_record1.fasting_blood_sugar }} mg/dL
+    </span>
+    {% if health_record1.fasting_blood_sugar < 70 %}
+        <span class="text-red">(ต่ำกว่าเกณฑ์)</span>
+    {% elif health_record1.fasting_blood_sugar > 99 %}
+        <span class="text-red">(สูงกว่าเกณฑ์)</span>
+    {% else %}
+        <span class="text-green">(ปกติ)</span>
+    {% endif %}
+</p>
+
+<!-- หลังอาหาร -->
+<p>หลังอาหาร:
+    <span class="badge {% if health_record1.postprandial_blood_sugar < 70 %}bg-custom-danger
+                      {% elif health_record1.postprandial_blood_sugar > 139 %}bg-custom-danger
+                      {% else %}bg-custom-success{% endif %}">
+        {{ health_record1.postprandial_blood_sugar }} mg/dL
+    </span>
+    {% if health_record1.postprandial_blood_sugar < 70 %}
+        <span class="text-red">(ต่ำกว่าเกณฑ์)</span>
+    {% elif health_record1.postprandial_blood_sugar > 139 %}
+        <span class="text-red">(สูงกว่าเกณฑ์)</span>
+    {% else %}
+        <span class="text-green">(ปกติ)</span>
+    {% endif %}
+</p>
+
+
+
+                <!-- Blood Sugar Pie Chart -->
+                <canvas id="bloodSugarPieChart" width="400" height="400"></canvas>
+            {% else %}
+                <p class="text-muted">ไม่มีข้อมูลที่บันทึก</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+    <!-- Blood Pressure Card -->
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0 rounded">
+            <div class="card-body">
+                <h5 class="card-title text-dark font-weight-bold">ความดันโลหิต (DBP)</h5>
+                {% if health_record1.blood_pressure %}
+                    <p>ความดันโลหิต:
+                        <span class="badge {% if health_record1.blood_pressure < 60 %}bg-custom-danger{% elif health_record1.blood_pressure >= 60 and health_record1.blood_pressure <= 80 %}bg-success{% else %}bg-custom-danger{% endif %}">
+                            {{ health_record1.blood_pressure }} mmHg
+                        </span>
+                        {% if health_record1.blood_pressure < 60 %}
+                            <span class="text-red">(ความดันโลหิตต่ำ)</span>
+                        {% elif health_record1.blood_pressure > 80 %}
+                            <span class="text-red">(ความดันโลหิตสูง)</span>
+                        {% endif %}
+                    </p>
+
+                    <!-- Blood Pressure Chart -->
+                    <canvas id="bloodPressureChart" width="400" height="400"></canvas>
+                {% else %}
+                    <p class="text-muted">ไม่มีข้อมูลที่บันทึก</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Articles Section -->
 <div class="articles-section mt-5">
@@ -220,7 +295,7 @@
 
                     <h3 class="text-dark font-weight-bold" style="font-size: 1.2rem;">{{ article.title }}</h3>
                     <p>{{ article.content|truncatewords:2.5 }}</p>  <!-- แสดงแค่ 30 คำ -->
-                    <a href="{% url 'view_article' article.id %}" class="btn btn-outline-primary">อ่านเพิ่มเติม</a>
+                    <a href="{% url 'view_article_user' article.id %}" class="btn btn-outline-primary">อ่านเพิ่มเติม</a>
                 </div>
             </div>
         {% empty %}
@@ -230,15 +305,11 @@
 </div>
 
 
-
-
-
-
 <script>
     // ข้อมูลน้ำตาลในเลือด
     const fastingBloodSugar = {{ health_record1.fasting_blood_sugar }};
     const postprandialBloodSugar = {{ health_record1.postprandial_blood_sugar }};
-    const bmi = {{ health_record1.bmi }};
+    const bmi = {{  health_record1.bmi|floatformat:2 }};
     const bloodPressure = {{ health_record1.blood_pressure }};
 
     // กำหนดเกณฑ์ระดับน้ำตาล
@@ -286,13 +357,14 @@
                             const label = tooltipItem.label;
                             const value = tooltipItem.raw;
                             const status = sugarStatus[index] !== undefined ? sugarStatus[index] : "ไม่ระบุ";
-                            return `${label}: ${value} mg/dL (${status})`;
+                            return `${label}: ${value} mg/dL (${status})`; // เพิ่มหน่วย mg/dL
                         }
                     }
                 }
             }
         }
     });
+
 
 
     document.addEventListener("DOMContentLoaded", function () {

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขบทความ</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Montaga, sans-serif;
+            background: linear-gradient(to bottom, #5ED0E6, #004AAD);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #000;
+        }
+        h1 {
+            color: #004AAD;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #004AAD;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #003080;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #004AAD;
+            font-size: 14px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>แก้ไขบทความ: {{ article.title }}</h1>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <!-- แสดงรูปภาพปัจจุบันถ้ามี -->
+            {% if article.image %}
+            <div class="current-image">
+                <p>รูปภาพปัจจุบัน:</p>
+                <img src="{{ article.image.url }}" alt="Current Image" style="max-width: 1000px; height: auto;">
+            </div>
+            {% endif %}
+
+            <button type="submit">บันทึกการเปลี่ยนแปลง</button>
+        </form>
+
+        <a href="{% url 'articles_user' %}">กลับไปยังหน้ารายการบทความ</a>
+    </div>
+</body>
+</html>
+

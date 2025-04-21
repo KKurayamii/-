@@ -1,0 +1,116 @@
+{% extends 'base_user.html' %}
+
+{% block content %}
+<div class="notification-container">
+    <div class="notification-form">
+        <form method="post">
+            {% csrf_token %}
+            <fieldset>
+                <legend>ตั้งค่าการแจ้งเตือน</legend>
+
+                <label for="medication_name">เลือกประเภทการแจ้งเตือน:</label>
+                <select id="medication_name" name="medication_name" required>
+                    <option value="" disabled selected>-- กรุณาเลือก --</option>
+                    <option value="แจ้งเตือนการทานยา">แจ้งเตือนการทานยา</option>
+                    <option value="แจ้งเตือนการนัดหมายสุขภาพ">แจ้งเตือนการนัดหมายสุขภาพ</option>
+                </select>
+
+                <label for="message">ข้อความเพิ่มเติม:</label>
+                <textarea id="message" name="message" rows="3" required></textarea>
+
+                <label for="date_sent">วันที่ส่งแจ้งเตือน:</label>
+                <input type="datetime-local" id="date_sent" name="date_sent" required>
+
+                <button type="submit">บันทึกการแจ้งเตือน</button>
+            </fieldset>
+        </form>
+
+        {% if error %}
+            <p class="error-message">⚠ {{ error }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .notification-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh; /* ปรับให้ฟอร์มอยู่ตรงกลาง */
+    }
+
+    .notification-form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        text-align: center;
+    }
+
+    fieldset {
+        border: none;
+    }
+
+    legend {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    label {
+        display: block;
+        text-align: left;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    select, textarea, input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        margin-top: 10px;
+    }
+
+    .checkbox-container input {
+        margin-right: 8px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}

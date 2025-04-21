@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผลการวินิจฉัย</title>
+    <center><title>ผลการวินิจฉัย</title></center>
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- jQuery -->
@@ -74,6 +74,13 @@
 
 .text-success {
     color: green;
+}
+/* CSS สำหรับแถวที่มีความเสี่ยง */
+.table-danger {
+    background-color: #f8d7da; /* สีพื้นหลังแดงอ่อน */
+}
+.table td, .table th {
+    color: #000 !important;  /* เปลี่ยนสีตัวอักษรเป็นสีดำ */
 }
 
     </style>
@@ -180,7 +187,7 @@
 
 <!-- Pagination Controls -->
 <nav aria-label="Page navigation">
-    <ul class="pagination">
+    <ul class="d-flex justify-content-start mt-3">
         {% if page_obj.has_previous %}
             <li class="page-item">
                 <a class="page-link" href="?page=1&{{ filter_params }}">หน้าแรกสุด</a>

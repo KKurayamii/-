@@ -1,0 +1,27 @@
+{% extends 'base_user.html' %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ส่งอีเมลสำเร็จ</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="alert alert-success mt-5">
+            <h4 class="alert-heading">สำเร็จ!</h4>
+            <p>การแจ้งเตือนเกี่ยวได้ถูกส่งไปยังอีเมลของคุณเรียบร้อยแล้ว!</p>
+            <hr>
+            <p class="mb-0">สามารถตรวจสอบการแจ้งเตือนได้ตามเวลาที่กำหนด</p>
+            <a href="{% url 'medication_request_history' %}" class="btn btn-primary mt-3">กลับไปที่หน้าประวัติ</a>
+            <a href="{% url 'send_medication_email' %}" class="btn btn-primary mt-3">กลับไปที่ฟอร์ม</a>
+        </div>
+    </div>
+</body>
+</html>
+
+{% endblock %}

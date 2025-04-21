@@ -8,100 +8,129 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(to bottom, #f0f8ff, #4682b4);
             color: #333;
             margin: 0;
             padding: 0;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 50px auto;
-            padding: 20px;
+            padding: 30px;
             background: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         h1 {
-            text-align: center;
             color: #333;
             margin-bottom: 20px;
+            font-size: 2.5rem;
         }
         .article-list {
             list-style-type: none;
             padding: 0;
         }
         .article-list li {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             background: #f9f9f9;
-            padding: 10px;
+            padding: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .article-list li:hover {
-            transform: scale(1.03);
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
         .article-title {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 600;
             color: #007acc;
             text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.2s ease;
         }
         .article-title:hover {
+            color: #005fa3;
             text-decoration: underline;
         }
         .article-meta {
             font-size: 14px;
             color: #666;
-            margin-top: 5px;
+            margin-top: 10px;
+        }
+        .article-image img {
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+        }
+        .article-video iframe {
+            border-radius: 8px;
+            margin-top: 15px;
         }
         .btn-back {
             display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
+            margin-top: 30px;
+            padding: 12px 30px;
             background-color: #4682b4;
             color: #fff;
             text-decoration: none;
-            border-radius: 5px;
-            text-align: center;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
         }
         .btn-back:hover {
             background-color: #4169e1;
         }
+        .empty-message {
+            font-size: 1.2rem;
+            color: #777;
+            margin-top: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-   <div class="container">
-    <h1>Articles</h1>
+
+<div class="container">
+    <h1>บทความทั้งหมด</h1>
+
     <ul class="article-list">
         {% for article in articles %}
-        <li class="article-item">
-            <a href="{{ article.pk }}/" class="article-title">{{ article.title }}</a>
+            <li class="article-item">
+                <a href="{{ article.pk }}/" class="article-title">{{ article.title }}</a>
 
-            <!-- แสดงรูปภาพถ้ามี -->
-            {% if article.image %}
-            <div class="article-image">
-                <img src="{{ article.image.url }}" alt="Article Image" style="max-width: 100%; height: auto;">
-            </div>
-            {% endif %}
+                <!-- Display image if available -->
+                {% if article.image %}
+                    <div class="article-image">
+                        <img src="{{ article.image.url }}" alt="Article Image">
+                    </div>
+                {% endif %}
 
-            <!-- แสดงวิดีโอถ้ามี -->
-            {% if article.video_url %}
-            <div class="article-video">
-                <iframe width="100%" height="250" src="{{ article.video_url }}" frameborder="0" allowfullscreen></iframe>
-            </div>
-            {% endif %}
+                <!-- Display video if available -->
+                {% if article.video_url %}
+                    <div class="article-video">
+                        <iframe width="100%" height="250" src="{{ article.video_url }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                {% endif %}
 
-            <div class="article-meta">
-                Posted by: {{ article.author.get_full_name }} <br>
-                Published on: {{ article.created_at|date:"F j, Y, g:i a" }}
-            </div>
-        </li>
+                <div class="article-meta">
+                    Posted by: {{ article.author.get_full_name }} <br>
+                    Published on: {{ article.created_at|date:"F j, Y, g:i a" }}
+                </div>
+            </li>
         {% empty %}
-        <p>No articles available at the moment.</p>
+            <p class="empty-message">ไม่มีบทความในขณะนี้</p>
         {% endfor %}
     </ul>
-    <a href="{% url 'home' %}" class="btn-back">Back to Home</a>
+
+    <a href="{% url 'home' %}" class="btn-back">กลับสู่หน้าหลัก</a>
 </div>
+
+</body>
+</html>

@@ -1,21 +1,130 @@
-
-
+{% extends 'base_docter.html' %}
 {% block content %}
-  <h1>Health Records for Doctors</h1>
-  <table>
-    <tr>
-      <th>User</th>
-      <th>Last Visit</th>
-      <th>Action</th>
-    </tr>
-    {% for record in records %}
-    <tr>
-      <td>{{ record.user.username }}</td>
-      <td>{{ record.last_visit_date }}</td>
-      <td>
-        <a href="{% url 'health_record_detail_for_doctor' record.id %}">View</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
+
+ <div class="container">
+    <h1>ประวัติการบันทึกสุขภาพส่วนตัวทั้งหมดของสมาชิก</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ผู้ใช้</th>
+          <th>เวลาที่บันทึก</th>
+          <th class="action-column"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr>
+          <td>{{ record.user.username }}</td>
+          <td>{{ record.last_visit_date }}</td>
+          <td class="action-column">
+             <a href="{% url 'health_record_detail_for_doctor' record.id %}" class="btn btn-info">ดูรายละเอียด</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <style>
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+    }
+
+    thead {
+      background-color: #007bff; /* สีฟ้าหรือเขียวอ่อน */
+      color: white;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    td {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .action-column {
+      text-align: center;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      margin: 0 5px;
+      font-size: 14px;
+    }
+
+    .btn-view {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background-color: #007bff;
+    }
+
+    .btn-edit {
+      background-color: #FFC107;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background-color: #e0a800;
+    }
+
+    .btn-delete {
+      background-color: #F44336;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background-color: #e53935;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      .btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
 {% endblock %}
+

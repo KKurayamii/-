@@ -1,20 +1,187 @@
+{% extends 'base_admin.html' %}
 {% block content %}
-  <div style="max-width: 800px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
-    <h1 style="text-align: center; color: #333;">Edit Health Record for {{ record.user.username }}</h1>
+  <div style="max-width: 800px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f0f8ff; font-family: Arial, sans-serif; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="text-align: center; color: #007bff; font-size: 28px; margin-bottom: 20px;">แก้ไขประวัติสุขภาพของ {{ record.user.username }}</h1>
 
     <form method="POST" style="margin-top: 20px;">
       {% csrf_token %}
 
-      <div style="margin-bottom: 20px;">
-        {{ form.as_p }}
+      <!-- Tabs Navigation -->
+      <ul class="nav nav-tabs" id="formTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="tab1" data-bs-toggle="tab" href="#tab1-content" role="tab" aria-controls="tab1-content" aria-selected="true">ข้อมูลพื้นฐาน</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="tab2" data-bs-toggle="tab" href="#tab2-content" role="tab" aria-controls="tab2-content" aria-selected="false">การตรวจเลือด</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="tab3" data-bs-toggle="tab" href="#tab3-content" role="tab" aria-controls="tab3-content" aria-selected="false">การตรวจสุขภาพ</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="tab4" data-bs-toggle="tab" href="#tab4-content" role="tab" aria-controls="tab4-content" aria-selected="false">ผลการตรวจอื่นๆ</a>
+        </li>
+      </ul>
+
+      <!-- Tabs Content -->
+      <div class="tab-content mt-3" id="formTabsContent">
+        <!-- Tab 1: ข้อมูลพื้นฐาน -->
+        <div class="tab-pane fade show active" id="tab1-content" role="tabpanel" aria-labelledby="tab1">
+          <div class="form-field">
+            <label for="weight">น้ำหนัก (kg)</label>
+            <input type="text" name="weight" value="{{ record.weight }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="height">ส่วนสูง (cm)</label>
+            <input type="text" name="height" value="{{ record.height }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="bmi">BMI</label>
+            <input type="text" name="bmi" value="{{ record.bmi }}" class="form-control">
+          </div>
+        </div>
+
+        <!-- Tab 2: การตรวจเลือด -->
+        <div class="tab-pane fade" id="tab2-content" role="tabpanel" aria-labelledby="tab2">
+          <div class="form-field">
+            <label for="blood_pressure">ความดันเลือด (mmHg)</label>
+            <input type="text" name="blood_pressure" value="{{ record.blood_pressure }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="insulin">อินซูลิน</label>
+            <input type="text" name="insulin" value="{{ record.insulin }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="fasting_blood_sugar">น้ำตาลในเลือดขณะอดอาหาร</label>
+            <input type="text" name="fasting_blood_sugar" value="{{ record.fasting_blood_sugar }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="postprandial_blood_sugar">น้ำตาลในเลือดหลังอาหาร</label>
+            <input type="text" name="postprandial_blood_sugar" value="{{ record.postprandial_blood_sugar }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="hba1c">HbA1c</label>
+            <input type="text" name="hba1c" value="{{ record.hba1c }}" class="form-control">
+          </div>
+        </div>
+
+        <!-- Tab 3: การตรวจสุขภาพ -->
+        <div class="tab-pane fade" id="tab3-content" role="tabpanel" aria-labelledby="tab3">
+          <div class="form-field">
+            <label for="bun">ระดับ BUN</label>
+            <input type="text" name="bun" value="{{ record.bun }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="cr">ระดับ Creatinine</label>
+            <input type="text" name="cr" value="{{ record.cr }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="egfr">ค่า eGFR</label>
+            <input type="text" name="egfr" value="{{ record.egfr }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="triglycerides">Triglycerides</label>
+            <input type="text" name="triglycerides" value="{{ record.triglycerides }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="cholesterol">Cholesterol</label>
+            <input type="text" name="cholesterol" value="{{ record.cholesterol }}" class="form-control">
+          </div>
+        </div>
+
+        <!-- Tab 4: ผลการตรวจอื่นๆ -->
+        <div class="tab-pane fade" id="tab4-content" role="tabpanel" aria-labelledby="tab4">
+          <div class="form-field">
+            <label for="hdl">HDL</label>
+            <input type="text" name="hdl" value="{{ record.hdl }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="ldl">LDL</label>
+            <input type="text" name="ldl" value="{{ record.ldl }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="albumin_in_urine">Albumin ในปัสสาวะ</label>
+            <input type="text" name="albumin_in_urine" value="{{ record.albumin_in_urine }}" class="form-control">
+          </div>
+          <div class="form-field">
+            <label for="ekg">ผลการตรวจ EKG</label>
+            <textarea name="ekg" class="form-control">{{ record.ekg }}</textarea>
+          </div>
+          <div class="form-field">
+            <label for="chest_x_ray">ผลการตรวจ X-Ray</label>
+            <textarea name="chest_x_ray" class="form-control">{{ record.chest_x_ray }}</textarea>
+          </div>
+          <div class="form-field">
+            <label for="diabetic_retinopathy_screening">การตรวจตาเบาหวาน</label>
+            <textarea name="diabetic_retinopathy_screening" class="form-control">{{ record.diabetic_retinopathy_screening }}</textarea>
+          </div>
+          <div class="form-field">
+            <label for="diabetic_foot_screening">การตรวจเท้าผู้ป่วยเบาหวาน</label>
+            <textarea name="diabetic_foot_screening" class="form-control">{{ record.diabetic_foot_screening }}</textarea>
+          </div>
+        </div>
       </div>
 
-      <div style="text-align: center; margin-top: 20px;">
-        <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
-          Save changes
+      <div style="text-align: center; margin-top: 30px;">
+        <button type="submit" style="padding: 12px 25px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">
+          บันทึกการเปลี่ยนแปลง
         </button>
       </div>
     </form>
-
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .form-field input, .form-field textarea {
+      font-size: 16px;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 5px;
+    }
+
+    .form-field input:focus, .form-field textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    <style>
+  .nav-tabs .nav-link {
+    background-color: #e3f2fd; /* สีฟ้าอ่อน */
+    color: #007bff; /* สีน้ำเงินสำหรับข้อความ */
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: #2196f3; /* สีฟ้าเข้มเมื่อแท็บถูกเลือก */
+    color: white; /* ข้อความสีขาวเมื่อแท็บถูกเลือก */
+  }
+
+  .nav-tabs .nav-item .nav-link:hover {
+    background-color: #bbdefb; /* สีฟ้าปานกลางเมื่อวางเมาส์ */
+  }
+  /* กำหนดสีพื้นหลังและสีข้อความของแท็บ */
+  .nav-tabs .nav-link {
+    background-color: #e3f2fd; /* สีฟ้าอ่อน */
+    color: #0d6efd !important; /* สีน้ำเงิน Bootstrap */
+    border: 1px solid #0d6efd; /* กรอบสีน้ำเงิน */
+  }
+
+  /* เมื่อแท็บถูกเลือก */
+  .nav-tabs .nav-link.active {
+    background-color: #0d6efd !important; /* สีน้ำเงินเข้ม */
+    color: white !important; /* ข้อความสีขาว */
+    border: 1px solid #0d6efd; /* กรอบสีน้ำเงิน */
+  }
+
+  /* เมื่อวางเมาส์บนแท็บ */
+  .nav-tabs .nav-link:hover {
+    background-color: #bbdefb !important; /* สีฟ้าปานกลาง */
+    color: #0d6efd !important; /* สีน้ำเงิน */
+  }
+</style>
 {% endblock %}

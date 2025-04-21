@@ -121,6 +121,25 @@
             background-color: #f2f2f2;
             text-align: left;
         }
+        #bmi_display {
+            display: none;   /* ซ่อนช่องกรอก BMI */
+        }
+        .info-button {
+            border: none;
+            background: transparent;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            position: absolute;
+            right: 5px;
+        }
+        input[type="text"], input[type="number"], input[type="datetime-local"], select {
+    width: 95%;          /* ขยายช่องกรอกให้ยาวเต็มพื้นที่ */
+    padding: 8px;         /* เพิ่มพื้นที่ในช่องกรอก */
+    box-sizing: border-box; /* ให้ช่องกรอกรวมขนาดกรอบและ padding */
+}
+
+
     </style>
 </head>
 <body>
@@ -138,109 +157,209 @@
             {% csrf_token %}
 
             <!-- ข้อมูลทั่วไป -->
-            <div id="general-info" class="tab-content active">
-                <div class="form-group">
-                    <label>ความดันโลหิต:</label>
-                    {{ form.blood_pressure }}
-                </div>
-                <div class="form-group">
-                    <label>น้ำหนัก (kg):</label>
-                    {{ form.weight }}
-                </div>
-                <div class="form-group">
-                    <label>ส่วนสูง (cm):</label>
-                    {{ form.height }}
-                </div>
-                <div class="form-group">
-                    <label>BMI:</label>
-                    <input id="bmi_display" type="text" value="{{ form.instance.bmi|default:0 }}" readonly>
-                </div>
+<div id="general-info" class="tab-content active">
+    <div class="form-group">
+        <label>น้ำหนัก (Weight):</label>
+        <div class="input-group">
+            {{ form.weight }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกน้ำหนักเป็นกิโลกรัม">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ส่วนสูง (Height):</label>
+        <div class="input-group">
+            {{ form.height }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกส่วนสูงเป็นเซนติเมตร">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <input id="bmi_display" type="text" value="{{ form.instance.bmi|default:0 }}" readonly>
+    </div>
+    <div class="form-group">
+        <label>ความดันโลหิต (Blood Pressure):</label>
+        <div class="input-group">
+            {{ form.blood_pressure }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าความดันโลหิต เช่น 60 mmHg หรือ 80 mmHg เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>อินซูลิน (Insulin):</label>
+        <div class="input-group">
+            {{ form.insulin }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าอินซูลินในเลือด เช่น 10 μU/mL หรือ 15 μU/mL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ระดับน้ำตาลก่อนอาหาร (Fasting Blood Sugar):</label>
+        <div class="input-group">
+            {{ form.fasting_blood_sugar }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าระดับน้ำตาลในเลือดก่อนอาหาร  เช่น 90 mg/dL หรือ 120 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ระดับน้ำตาลหลังอาหาร (Postprandial Blood Sugar):</label>
+        <div class="input-group">
+            {{ form.postprandial_blood_sugar }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าระดับน้ำตาลในเลือดหลังอาหาร เช่น 100 mg/dL หรือ 130 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>วันที่พบแพทย์ล่าสุด (Last Doctor Visit):</label>
+        <div class="input-group">
+            <input type="datetime-local" name="last_visit_date" value="{{ form.instance.last_visit_date|date:'Y-m-d\TH:i' }}">
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="เลือกวันที่พบแพทย์ล่าสุด เช่น 2025-03-10 14:00 เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+</div>
 
-                <div class="form-group">
-                    <label>อินซูลิน:</label>
-                    {{ form.insulin }}
-                </div>
-                <div class="form-group">
-                    <label>ระดับน้ำตาลก่อนอาหาร:</label>
-                    {{ form.fasting_blood_sugar }}
-                </div>
-                <div class="form-group">
-                    <label>ระดับน้ำตาลหลังอาหาร:</label>
-                    {{ form.postprandial_blood_sugar }}
-                </div>
-                <!-- ✅ เพิ่มช่องเลือกวันที่พบแพทย์ล่าสุด -->
-                <div class="form-group">
-                    <label>วันที่พบแพทย์ล่าสุด:</label>
-                    <input type="datetime-local" name="last_visit_date" value="{{ form.instance.last_visit_date|date:'Y-m-d\TH:i' }}">
-                </div>
-            </div>
+<!-- ค่าทางชีวเคมี (Biochemistry) -->
+<div id="biochemistry" class="tab-content">
+    <div class="form-group">
+        <label>ค่าน้ำตาลในเลือดเฉลี่ยสะสม (HbA1c):</label>
+        <div class="input-group">
+            {{ form.hba1c }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าน้ำตาลในเลือดเฉลี่ยสะสมในเลือด (%) เช่น 5.0 mg% หรือ 5.4 mg% เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ไนโตรเจนยูเรียในเลือด (BUN):</label>
+        <div class="input-group">
+            {{ form.bun }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกระดับไนโตรเจนยูเรียในเลือด เช่น 15 mg/dL หรือ 20 mg/dL">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ค่าครีเอตินินในเลือด (Creatinine):</label>
+        <div class="input-group">
+            {{ form.cr }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าครีเอตินินในเลือด เช่น 0.9 mg/dL หรือ 1.0 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label> อัตราการกรองของไตโดยประมาณ (eGFR):</label>
+        <div class="input-group">
+            {{ form.egfr }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกอัตราการกรองของไตโดยประมาณ เช่น 85 mL/min/1.73m² หรือ 90 mL/min/1.73m² เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ระดับไตรกลีเซอไรด์ในเลือด (Triglycerides):</label>
+        <div class="input-group">
+            {{ form.triglycerides }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกระดับไตรกลีเซอไรด์ในเลือด เช่น 100 mg/dL หรือ 150 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label> ระดับคอเลสเตอรอลในเลือด (Cholesterol):</label>
+        <div class="input-group">
+            {{ form.cholesterol }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกระดับคอเลสเตอรอลรวม เช่น 150 mg/dL หรือ 200 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>คอเลสเตอรอลชนิดดี (HDL):</label>
+        <div class="input-group">
+            {{ form.hdl }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าคอเลสเตอรอลชนิดดี เช่น 50 mg/dL หรือ 60 mg/dL เป็นต้น ">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>คอเลสเตอรอลชนิดไม่ดี (LDL):</label>
+        <div class="input-group">
+            {{ form.ldl }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกค่าคอเลสเตอรอลชนิดไม่ดี เช่น 80 mg/dL หรือ 100 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+</div>
 
-            <!-- ค่าทางชีวเคมี -->
-            <div id="biochemistry" class="tab-content">
-                <div class="form-group">
-                    <label>HbA1c:</label>
-                    {{ form.hba1c }}
-                </div>
-                <div class="form-group">
-                    <label>BUN:</label>
-                    {{ form.bun }}
-                </div>
-                <div class="form-group">
-                    <label>Creatinine:</label>
-                    {{ form.cr }}
-                </div>
-                <div class="form-group">
-                    <label>eGFR:</label>
-                    {{ form.egfr }}
-                </div>
-                <div class="form-group">
-                    <label>Triglycerides:</label>
-                    {{ form.triglycerides }}
-                </div>
-                <div class="form-group">
-                    <label>Cholesterol:</label>
-                    {{ form.cholesterol }}
-                </div>
-                <div class="form-group">
-                    <label>HDL:</label>
-                    {{ form.hdl }}
-                </div>
-                <div class="form-group">
-                    <label>LDL:</label>
-                    {{ form.ldl }}
-                </div>
-            </div>
+<!-- การตรวจเพิ่มเติม (Additional Tests) -->
+<div id="additional-tests" class="tab-content">
+    <div class="form-group">
+        <label>ระดับโปรตีนในปัสสาวะ (Albumin in Urine):</label>
+        <div class="input-group">
+            {{ form.albumin_in_urine }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกระดับโปรตีนในปัสสาวะ เช่น 20 mg/dL หรือ 40 mg/dL เป็นต้น">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>การตรวจคลื่นไฟฟ้าหัวใจ (EKG):</label>
+        <div class="input-group">
+            {{ form.ekg }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกผลการตรวจ EKG เช่น ปกติ หรือ มีอาการผิดปกติ">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>เอกซเรย์ปอด (Chest X-Ray):</label>
+        <div class="input-group">
+            {{ form.chest_x_ray }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกผลการตรวจเอกซเรย์ปอด เช่น ปกติ หรือ มีปัญหาหลอดลม">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ตรวจจอประสาทตา (Diabetic Retinopathy Screening):</label>
+        <div class="input-group">
+            {{ form.diabetic_retinopathy_screening }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกผลการตรวจจอประสาทตา เช่น ปกติ หรือ พบอาการเบาหวาน">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>ตรวจเท้าผู้ป่วยเบาหวาน (Diabetic Foot Screening):</label>
+        <div class="input-group">
+            {{ form.diabetic_foot_screening }}
+            <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกผลการตรวจเท้าผู้ป่วยเบาหวาน เช่น ปกติ หรือ พบแผล">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </div>
+    </div>
+</div>
 
-            <!-- การตรวจเพิ่มเติม -->
-            <div id="additional-tests" class="tab-content">
-                <div class="form-group">
-                    <label>Albumin ในปัสสาวะ:</label>
-                    {{ form.albumin_in_urine }}
-                </div>
-                <div class="form-group">
-                    <label>EKG:</label>
-                    {{ form.ekg }}
-                </div>
-                <div class="form-group">
-                    <label>เอกซเรย์ปอด:</label>
-                    {{ form.chest_x_ray }}
-                </div>
-                <div class="form-group">
-                    <label>ตรวจจอประสาทตา:</label>
-                    {{ form.diabetic_retinopathy_screening }}
-                </div>
-                <div class="form-group">
-                    <label>ตรวจเท้าผู้ป่วยเบาหวาน:</label>
-                    {{ form.diabetic_foot_screening }}
-                </div>
-            </div>
+
+
 
             <button type="submit" class="submit-btn">บันทึกข้อมูล</button>
         </form>
 
         <p id="error-message" style="color: red; text-align: center; display: none;">กรุณากรอกข้อมูลให้ครบทุกช่อง!</p>
-
-        <h3>จำนวนการบันทึกทั้งหมด: <span id="record-count">{{ total_records }}</span></h3>
+    <br>
+        <h4>จำนวนการบันทึกทั้งหมด: <span id="record-count">{{ total_records }}</span></h4>
 
  <!-- ตารางแสดงข้อมูลการบันทึก -->
 <table>
@@ -263,6 +382,8 @@
         {% endfor %}
     </tbody>
 </table>
+    <br>
+    <center><a href="{% url 'history1' %}">ดูประวัติการบันทึกข้อมูล</a></center>
 
     <script>
         function showTab(tabId) {
@@ -312,7 +433,6 @@ document.getElementById('id_weight').addEventListener('input', calculateBMI);
 document.getElementById('id_height').addEventListener('input', calculateBMI);
     </script>
 
-    <a href="{% url 'dashboard' %}" class="back-btn">กลับสู่หน้า Home</a>
 </body>
 </html>
 

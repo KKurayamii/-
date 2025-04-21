@@ -1,21 +1,24 @@
+{% extends 'base_admin.html' %}
+
 {% block content %}
-  <div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
-    <h1 style="text-align: center; color: #333;">คุณแน่ใจใช่ไหมว่าจะลบ?</h1>
-    <div style="margin-bottom: 20px;">
-      <p><strong>User:</strong> {{ record.user.username }}</p>
-      <p><strong>Last Visit:</strong> {{ record.last_visit_date }}</p>
+  <div style="max-width: 600px; margin: 30px auto; padding: 25px; border: 1px solid #ddd; border-radius: 10px; background-color: #fff3f3; font-family: 'Arial', sans-serif; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="text-align: center; color: #d32f2f; font-size: 22px; font-weight: bold;">⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?</h1>
+
+    <div style="margin-bottom: 20px; text-align: center; font-size: 18px; color: #333;">
+      <p><strong>ผู้ใช้:</strong> {{ record.user.username }}</p>
+      <p><strong>วันนัดครั้งสุดท้าย:</strong> {{ record.last_visit_date }}</p>
     </div>
 
     <form method="POST" style="text-align: center;">
       {% csrf_token %}
-      <button type="submit" style="padding: 10px 20px; background-color: #F44336; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 0 15px;">
-        Yes, delete
+      <button type="submit" style="padding: 12px 25px; background-color: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 0 10px;">
+        ใช่, ลบข้อมูล
       </button>
     </form>
 
     <div style="text-align: center; margin-top: 20px;">
-      <a href="{% url 'health_record_list_admin' %}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
-        Cancel
+      <a href="{% url 'health_record_list_admin' %}" style="padding: 12px 25px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
+          ยกเลิก
       </a>
     </div>
   </div>

@@ -1,0 +1,77 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>แผนที่แสดงข้อมูลเสี่ยงตามอำเภอ</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDszHFy6sy2klQOWoBm_sYC976sxsSb23w&callback=initMap" async defer></script>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h3>แผนที่แสดงข้อมูลเสี่ยงตามอำเภอ</h3>
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 8,
+                center: { lat: 15.2284, lng: 104.8564 } // ศูนย์กลางที่อุบลราชธานี
+            });
+
+        var infoWindows = [];
+        var markers = {{ markers|safe }};
+
+        var positionMap = {}; // เก็บจำนวนครั้งที่ตำแหน่งเดียวกันถูกใช้
+
+        markers.forEach(function(data) {
+            var key = `${data.lat},${data.lng}`;
+            if (positionMap[key]) {
+                positionMap[key] += 1;
+            } else {
+                positionMap[key] = 1;
+            }
+
+            // ขยับตำแหน่งที่ซ้ำกัน
+            var newLat = data.lat + (positionMap[key] - 1) * 0.0003; // ขยับทีละนิด
+            var newLng = data.lng + (positionMap[key] - 1) * 0.0003;
+
+            var marker = new google.maps.Marker({
+                position: { lat: newLat, lng: newLng },
+                map: map,
+                title: data.name,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: data.marker_color,
+                    fillOpacity: 1,
+                    strokeColor: data.marker_color,
+                    strokeWeight: 2
+                }
+            });
+
+            var infoWindow = new google.maps.InfoWindow({
+                content: `<strong>ชื่อ:</strong> ${data.name}<br>
+                          <strong>โทร:</strong> ${data.phone}<br>
+                          <strong>ที่อยู่:</strong> ${data.address}<br>
+                          <strong>สถานะ:</strong> ${data.risk}`
+            });
+
+            infoWindows.push(infoWindow);
+
+            marker.addListener('click', function() {
+                infoWindows.forEach(iw => iw.close());
+                infoWindow.open(map, marker);
+            });
+        });
+    }
+    </script>
+</body>
+</html>
+
+{% endblock %}

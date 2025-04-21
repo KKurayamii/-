@@ -1,105 +1,113 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>อัปโหลดโมเดล</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fc;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+{% extends 'base_admin.html' %}
 
+{% block content %}
+<div class="container">
+    <h1>อัปโหลดโมเดล</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-field">
+            {{ form.as_p }}
+        </div>
+        <button type="submit">อัปโหลดโมเดล</button>
+    </form>
+
+    {% if latest_model %}
+        <div class="latest-model">
+            <p>โมเดลล่าสุดที่อัปโหลด: {{ latest_model.uploaded_at }}</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 650px;
+        box-sizing: border-box;
+        margin: 0 auto;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-field label {
+        font-weight: bold;
+        font-size: 16px;
+        color: #444;
+    }
+
+    .form-field input[type="text"], .form-field input[type="file"] {
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: border-color 0.3s ease-in-out;
+        box-sizing: border-box;
+    }
+
+    .form-field input:focus {
+        border-color: #4A90E2;
+        outline: none;
+    }
+
+    button {
+        background-color: #004AAD;
+        color: #fff;
+        padding: 15px;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+        width: 100%;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .latest-model {
+        margin-top: 25px;
+        font-size: 16px;
+        color: #666;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
         .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
+            padding: 20px;
+            width: 90%;
         }
 
         h1 {
-            text-align: center;
-            color: #000;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .form-field label {
-            font-weight: bold;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .form-field input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
-
-        .form-field input:focus {
-            border-color: #4A90E2;
-            outline: none;
+            font-size: 22px;
         }
 
         button {
-            background-color: #4A90E2;
-            color: #fff;
-            padding: 15px;
+            padding: 12px;
             font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
-
-        button:hover {
-            background-color: #357ABD;
-        }
-
-        .latest-model {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #333;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>อัปโหลดโมเดล</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-field">
-                {{ form.as_p }}
-            </div>
-            <button type="submit">อัปโหลดโมเดล</button>
-        </form>
-
-        {% if latest_model %}
-            <div class="latest-model">
-                <p>โมเดลล่าสุดที่อัปโหลด: {{ latest_model.uploaded_at }}</p>
-            </div>
-        {% endif %}
-    </div>
-</body>
-</html>
+    }
+</style>
+{% endblock %}

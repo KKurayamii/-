@@ -1,0 +1,21 @@
+Pregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI,DiabetesPedigreeFunction,Age,Outcome,Name,Address,Phone,Gender
+High Risk,Diabetes,Normal,At Risk of Obesity,No Insulin Produced,Obesity class 1,High Risk,Middle-aged Adult,1,Anna,Nam Khun,0801234567,Female
+Low Risk,Normal,Normal,High Fat Accumulation,No Insulin Produced,Overweight,Moderate Risk,Young Adult,0,Devon,Samrong,0801234568,Male
+High Risk,Diabetes,Normal,Low,No Insulin Produced,Normal weight,High Risk,Young Adult,1,Chanada,Nam Khun,0801234569,Female
+Low Risk,Normal,Normal,High Fat Accumulation,Elevated,Overweight,Low Risk,Young Adult,0,Darin,Tan Sum,0801234570,Female
+Low Risk,Diabetes,Low,At Risk of Obesity,High,Obesity class 3,Very High Risk,Young Adult,1,Somchai,Na Tan,0801234571,Male
+High Risk,Prediabetes,Normal,Low,No Insulin Produced,Overweight,Moderate Risk,Young Adult,0,Linda,Lao Suea Kok,0801234572,Female
+Moderate Risk,Normal,Low,At Risk of Obesity,Elevated,Obesity class 1,Moderate Risk,Young Adult,1,Nitada,Pho Sai,0801234573,Female
+High Risk,Prediabetes,Low,Low,No Insulin Produced,Obesity class 2,Low Risk,Young Adult,0,Tawanna,Samrong,0801234574,Female
+Moderate Risk,Diabetes,Normal,At Risk of Obesity,High,Obesity class 1,Low Risk,Middle-aged Adult,1,Supawale,Na Tan,0801234575,Female
+High Risk,Prediabetes,Hypertension Stage 1,Low,No Insulin Produced,Underweight,Moderate Risk,Middle-aged Adult,1,Kanchanok,Lao Suea Kok,0801234576,Female
+High Risk,Prediabetes,Hypertension Stage 1,Low,No Insulin Produced,Obesity class 2,Low Risk,Young Adult,0,Chinapa,Det Udom,0801234577,Female
+High Risk,Diabetes,Normal,Low,No Insulin Produced,Obesity class 2,High Risk,Young Adult,1,Sarawadee,Warin Chamrap,0801234578,Female
+High Risk,Diabetes,Elevated,Low,No Insulin Produced,Overweight,Very High Risk,Middle-aged Adult,0,Sunida,Pho Sai,0801234579,Female
+Low Risk,Diabetes,Normal,High Fat Accumulation,High,Obesity class 1,Moderate Risk,Middle-aged Adult,1,Kunanoon,Samrong,0801234580,Male
+High Risk,Diabetes,Normal,Normal,High,Overweight,High Risk,Middle-aged Adult,1,Warinkan,Det Udom,0801234581,Female
+High Risk,Prediabetes,Low,Low,No Insulin Produced,Obesity class 1,Moderate Risk,Young Adult,1,Latina,Tan Sum,0801234582,Female
+Low Risk,Prediabetes,Elevated,At Risk of Obesity,High,Obesity class 3,High Risk,Young Adult,1,Matikorn,Warin Chamrap,0801234583,Male
+High Risk,Prediabetes,Normal,Low,No Insulin Produced,Overweight,Moderate Risk,Young Adult,1,Panida,Pho Sai,0801234584,Female
+Low Risk,Prediabetes,Low,At Risk of Obesity,Elevated,Obesity class 3,Low Risk,Young Adult,0,Norrapat,Det Udom,0801234585,Male
+Low Risk,Prediabetes,Low,At Risk of Obesity,Elevated,Obesity class 3,Low Risk,Young Adult,0,Norrapat,Det Udom,0801234585,Male

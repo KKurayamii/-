@@ -110,10 +110,25 @@
                 </button>
             </form>
 
-            <!-- Login Redirect -->
-            <p class="text-center mt-6 text-sm text-gray-600">
-                <a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline">กลับสู่หน้าหลัก</a>
-            </p>
+           <!-- Login Redirect -->
+<p class="text-center mt-6 text-sm text-gray-600">
+    {% if user.is_authenticated %}
+        {% if user.role == "admin" %}
+            <a href="{% url 'dashboard_adminn' %}" class="text-blue-500 hover:underline">กลับสู่หน้าหลัก</a>
+        {% elif user.role == "member" %}
+            <a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline">กลับสู่หน้าหลัก</a>
+        {% elif user.role == "medical_officer" %}
+            <a href="{% url 'home_dc' %}" class="text-blue-500 hover:underline">กลับสู่หน้าหลัก</a>
+        {% else %}
+            <a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline">กลับสู่หน้าหลัก</a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'dashboard' %}" class="text-blue-500 hover:underline">กลับสู่หน้าหลัก</a>
+    {% endif %}
+</p>
+
+
+
         </div>
     </div>
 </div>

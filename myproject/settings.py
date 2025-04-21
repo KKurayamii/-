@@ -114,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Bangkok"
 
-USE_I18N = True
+USE_I18N = False
 
 USE_TZ = True
 
@@ -136,6 +136,16 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'adisorn8008@gmail.com'  # เปลี่ยนเป็นอีเมลของคุณ
+EMAIL_HOST_PASSWORD = 'limm jmub zrmp wxcb'  # ใช้ App Password ที่สร้างจาก Google
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

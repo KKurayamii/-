@@ -59,7 +59,7 @@ def user_logout(request):
 @login_required
 def reset_password(request):
     if request.method == 'POST':
-        form = SetPasswordForm(request.user, request.POST)
+        form = ResetPasswordForm(request.user, request.POST)
         if form.is_valid():
             form.save()  # บันทึกรหัสผ่านใหม่
             update_session_auth_hash(request, form.user)  # อัปเดต session เพื่อไม่ให้ล็อกอินออก
@@ -68,7 +68,7 @@ def reset_password(request):
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = SetPasswordForm(request.user)
+        form = ResetPasswordForm(request.user)
 
     return render(request, 'reset_password.html', {'form': form})
 
@@ -149,12 +149,14 @@ def dashboard_adminn(request):
     gender_counts = [item['count'] for item in gender_data]
 
     age_mapping = {
-        0: "0-12",
-        1: "13-19",
-        2: "20-39",
-        3: "40-59",
-        4: "60+"
+        0: "children",
+        1: "Adolescents",
+        2: "Young Adult",
+        3: "Middle-aged Adult",
+        4: "Older Adult"
     }
+
+
 
     # ดึงข้อมูลผลวินิจฉัยแยกตามช่วงอายุ
     age_risk_data = Diagnosis_N.objects.values('age', 'prediction')
@@ -177,6 +179,8 @@ def dashboard_adminn(request):
     age_risk_counts = [age_risk_dict[group]["เสี่ยง"] for group in age_labels]
     age_no_risk_counts = [age_risk_dict[group]["ไม่เสี่ยง"] for group in age_labels]
 
+    feature_image_base64, uploaded_at = feature_importance_view(request)
+
     context = {
         'total_users': total_users,
         'total_articles': total_articles,
@@ -190,6 +194,8 @@ def dashboard_adminn(request):
         'age_labels': age_labels,
         'age_risk_counts': age_risk_counts,
         'age_no_risk_counts': age_no_risk_counts,
+        'feature_image_base64': feature_image_base64,
+        'uploaded_at': uploaded_at,
     }
 
     return render(request, 'admin/dashboard_adminn.html', context)
@@ -204,33 +210,14 @@ from .models import CustomUser, HealthRecord1, Diagnosis_N
 from datetime import datetime
 from django.db.models import Q
 from datetime import timedelta
+from django.utils.dateparse import parse_date
+
+
+from datetime import datetime
 
 
 @login_required
 def dashboard_medical_staff(request):
-    # รับวันที่จาก query string
-    start_date = request.GET.get('start_date', None)
-    end_date = request.GET.get('end_date', None)
-
-    # หากไม่ได้รับวันที่จากฟอร์มให้ตั้งค่าวันที่เริ่มต้นและสิ้นสุด (7 วันล่าสุด)
-    if start_date and end_date:
-        start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d')
-
-        # หากใช้ timezone ให้แปลงเป็น aware datetime
-        start_date = timezone.make_aware(start_date)
-        end_date = timezone.make_aware(end_date)
-    else:
-        end_date = timezone.now()
-        start_date = end_date - timedelta(days=7)
-
-    # กรองข้อมูล Diagnosis_N ตามวันที่และผู้ใช้
-    diagnoses_filtered = Diagnosis_N.objects.filter(
-        created_at__gte=start_date,
-        created_at__lte=end_date,
-        user=request.user  # กรองตามผู้ใช้
-    )
-
     # จำนวนสมาชิกทั้งหมด
     total_users = CustomUser.objects.count()
 
@@ -261,7 +248,7 @@ def dashboard_medical_staff(request):
     diagnoses = Diagnosis_N.objects.all().order_by('-created_at')
 
     categories = {
-        "Children": 0,
+        "children": 0,
         "Adolescents": 1,
         "Young Adult": 2,
         "Middle-aged Adult": 3,
@@ -322,7 +309,6 @@ def dashboard_medical_staff(request):
 
     feature_image_base64, uploaded_at = feature_importance_view(request)
 
-    # ส่งข้อมูลไปยัง template
     return render(request, 'doctor/home_dc.html', {
         'total_users': total_users,
         'total_articles': total_articles,
@@ -338,7 +324,7 @@ def dashboard_medical_staff(request):
         'age_risk_counts': age_risk_counts,
         'age_no_risk_counts': age_no_risk_counts,
         'feature_image_base64': feature_image_base64,
-        'uploaded_at': uploaded_at
+        'uploaded_at': uploaded_at,
     })
 
 @login_required
@@ -408,14 +394,22 @@ def risk_info(request):
     # ดึงข้อมูลการวินิจฉัยที่เป็น "เสี่ยง"
     risk_data = Diagnosis_N.objects.filter(prediction__in=["เสี่ยง", "Risk"])
 
-    return render(request, 'risk_info.html', {'data': risk_data})
+    paginator = Paginator(risk_data, 5)  # Show 5 records per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'risk_info.html', {'data': page_obj})
 
 
 def no_risk_info(request):
     # ดึงข้อมูลการวินิจฉัยที่เป็น "ไม่เสี่ยง"
     no_risk_data = Diagnosis_N.objects.filter(prediction__in=["ไม่เสี่ยง", "No Risk"])
 
-    return render(request, 'no_risk_info.html', {'data': no_risk_data})
+    paginator = Paginator(no_risk_data, 5)  # Show 5 records per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'no_risk_info.html', {'data': page_obj})
 
 
 def get_age_category(value):
@@ -457,7 +451,7 @@ def get_age_category(value):
 def age_category_risk_info(request, age_category, risk_category):
     # กำหนดช่วงอายุ
     age_ranges = {
-        "children": (0, 12),  # เด็ก
+        "เด็ก (children) / 0-12 ปี": (0, 12),  # เด็ก
         "adolescents": (13, 19),  # วัยรุ่น
         "young_adults": (20, 39),  # วัยหนุ่มสาว
         "middle_aged_adults": (40, 59),  # วัยกลางคน
@@ -473,8 +467,12 @@ def age_category_risk_info(request, age_category, risk_category):
     # ดึงข้อมูลจากฐานข้อมูลที่กรองตามช่วงอายุและประเภทเสี่ยง
     data = Diagnosis_N.objects.filter(age__range=age_range, prediction=prediction_filter)
 
+    paginator = Paginator(data, 5)  # Show 5 records per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'age_risk_info.html',
-                  {'data': data, 'age_category': age_category, 'risk_category': risk_category})
+                  {'data': page_obj, 'age_category': age_category, 'risk_category': risk_category})
 
 
 @login_required
@@ -497,35 +495,6 @@ def profile_view(request):
     return render(request, 'profile.html', context)
 
 @login_required
-def rate_article(request, article_id):
-    article = get_object_or_404(ArticleRating, id=article_id)
-
-    if request.method == 'POST':
-        rating_score = int(request.POST.get('rating'))
-
-        # เช็คว่าผู้ใช้ได้ให้คะแนนบทความนี้ไปแล้วหรือไม่
-        existing_rating = ArticleRating.objects.filter(user=request.user, article=article).first()
-
-        if existing_rating:
-            # ถ้าเคยให้คะแนนแล้ว ให้ปรับคะแนนใหม่
-            existing_rating.score = rating_score
-            existing_rating.save()
-        else:
-            # ถ้ายังไม่เคยให้คะแนน ให้เพิ่มคะแนนใหม่
-            ArticleRating.objects.create(user=request.user, article=article, score=rating_score)
-
-        # คำนวณคะแนนเฉลี่ยใหม่
-        ratings = ArticleRating.objects.filter(article=article)
-        total_score = sum([rating.score for rating in ratings])
-        article.rating = total_score / ratings.count() if ratings.count() > 0 else 0
-        article.save()
-
-        # Redirect ไปที่หน้าเดียวกันหรือไปยังหน้าอื่น ๆ
-        return redirect('view_article', article_id=article.id)
-
-    return render(request, 'view_article.html', {'article': article})
-
-@login_required
 def articles_view(request):
     articles = Articles.objects.all()
     return render(request, 'articles.html', {
@@ -536,16 +505,7 @@ def articles_view(request):
 
 def view_article(request, article_id):
     article = get_object_or_404(Articles, id=article_id)
-    rating_range = range(1, 6)  # สร้างลิสต์ของ 1 ถึง 5
-
-    # ตรวจสอบว่าผู้ใช้เคยให้คะแนนหรือยัง
-    user_rating = ArticleRating.objects.filter(user=request.user, article=article).first()
-    if user_rating:
-        user_rating = user_rating.score
-    else:
-        user_rating = None
-
-    return render(request, 'view_article.html', {'article': article, 'user_rating': user_rating})
+    return render(request, 'view_article.html', {'article': article })
 
 def articles_list(request):
     articles = Articles.objects.all()
@@ -556,7 +516,6 @@ def articles_list(request):
     })
 
 @login_required
-@user_passes_test(is_admin_or_medical_staff)
 def add_article(request):
     if request.method == 'POST':
         form = ArticlesForm(request.POST, request.FILES)
@@ -570,7 +529,6 @@ def add_article(request):
     return render(request, 'add_article.html', {'form': form})
 
 @login_required
-@user_passes_test(is_admin_or_medical_staff)
 def edit_article(request, article_id):
     article = get_object_or_404(Articles, id=article_id)
 
@@ -839,7 +797,7 @@ def load_latest_model():
             model = pickle.load(model_file)  # Load the saved model with pickle
         return model, latest_model.uploaded_at
     except MLModel.DoesNotExist:
-        return None, None  # No model uploaded
+        return None, None
 
 def diagnose_form(request):
     return render(request, 'diagnose_diabetes_t.html')
@@ -1445,7 +1403,7 @@ def health_record_edit_admin(request, record_id):
             form.save()
             return redirect('health_record_detail_admin', record_id=record.id)
     else:
-        form = HealthRecordForm(instance=record)
+        form = HealthRecord1Form(instance=record)
     return render(request, 'health_record_edit_admin.html', {'form': form, 'record': record})
 
 def health_record_delete_admin(request, record_id):
@@ -1468,7 +1426,21 @@ def health_record_detail_for_doctor(request, record_id):
 
 def diagnosis_report_ad(request):
     diagnoses = Diagnosis_N.objects.all()
-    return render(request, 'diagnosis_report.html', {'diagnoses': diagnoses})
+
+    paginator = Paginator(diagnoses, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'diagnosis_report.html', {'page_obj': page_obj})
+
+def diagnosis_report_dc(request):
+    diagnoses = Diagnosis_N.objects.all()
+
+    paginator = Paginator(diagnoses, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'diagnosis_report_dc.html', {'page_obj': page_obj})
 
 import requests
 import logging
@@ -1522,3 +1494,476 @@ def show_map(request):
     return render(request, 'map.html', {'markers': marker_data})
 
 
+def show_map_admin(request):
+    # ดึงข้อมูลจากฐานข้อมูล
+    diagnoses = Diagnosis_N.objects.all()
+    marker_data = []
+
+    for diagnosis in diagnoses:
+        address = diagnosis.address  # ดึงชื่ออำเภอจากฐานข้อมูล
+        lat, lng = get_geocode(address)  # ดึงพิกัดจากชื่ออำเภอ
+        if lat and lng:
+            # กำหนดสีของมาร์คเกอร์ตามค่าของ prediction
+            marker_color = "red" if diagnosis.prediction == "เสี่ยง" else "green"
+
+            # เพิ่มข้อมูลของบุคคลลงใน marker_data
+            marker_data.append({
+                'name': diagnosis.name,
+                'phone': diagnosis.phone,
+                'address': address,
+                'lat': lat,
+                'lng': lng,
+                'risk': diagnosis.prediction,
+                'marker_color': marker_color
+            })
+
+    return render(request, 'admin/map_admin.html', {'markers': marker_data})
+
+
+
+
+def send_medication_email(request):
+    if request.method == 'POST':
+        form = MedicationForm(request.POST)
+        if form.is_valid():
+            medication_request = form.save(commit=False)
+            medication_request.user = request.user
+
+            # ป้องกันไม่ให้กำหนดเวลาส่งอีเมลย้อนหลัง
+            if medication_request.date_sent < now():
+                return render(request, 'send_medication_email.html', {'form': form, 'error': 'ต้องเลือกเวลาที่มากกว่าปัจจุบัน'})
+
+            medication_request.save()
+            return redirect('success_email')
+
+    else:
+        form = MedicationForm()
+
+    return render(request, 'send_medication_email.html', {'form': form})
+
+# ฟังก์ชันแสดงประวัติคำขอ
+def medication_request_history(request):
+    medication_requests = MedicationRequest.objects.filter(user=request.user)
+    return render(request, 'medication_request_history.html', {'medication_requests': medication_requests})
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import MedicationForm
+from .models import MedicationRequest
+
+# ฟังก์ชันแก้ไขคำขอ
+def edit_medication_request(request, request_id):
+    # ดึงข้อมูล MedicationRequest จากฐานข้อมูล
+    medication_request = get_object_or_404(MedicationRequest, id=request_id, user=request.user)
+
+    if request.method == 'POST':
+        form = MedicationForm(request.POST, instance=medication_request)
+        if form.is_valid():
+            form.save()  # บันทึกการเปลี่ยนแปลง
+            return redirect('medication_request_history')  # กลับไปที่หน้าประวัติคำขอ
+        else:
+            # ถ้าฟอร์มไม่ถูกต้อง, แสดงข้อความข้อผิดพลาด
+            return render(request, 'edit_medication_request.html', {'form': form, 'error': 'ข้อมูลไม่ถูกต้อง โปรดลองใหม่อีกครั้ง'})
+    else:
+        # ถ้าเป็น GET, แสดงฟอร์มพร้อมข้อมูลที่แก้ไข
+        form = MedicationForm(instance=medication_request)
+
+    return render(request, 'edit_medication_request.html', {'form': form})
+
+# ฟังก์ชันลบคำขอ
+def delete_medication_request(request, request_id):
+    medication_request = get_object_or_404(MedicationRequest, id=request_id, user=request.user)
+    medication_request.delete()  # ลบคำขอ
+    return redirect('medication_request_history')  # กลับไปที่หน้าประวัติคำขอ
+
+# ฟังก์ชันแสดงประวัติคำขอทั้งหมดสำหรับแอดมิน
+def medication_request_list(request):
+    # ตรวจสอบว่าเป็นแอดมิน
+    if not request.user.is_staff:
+        return redirect('home')  # ถ้าไม่ใช่แอดมินให้กลับไปหน้าหลัก
+
+    # ดึงข้อมูลคำขอทั้งหมด
+    medication_requests = MedicationRequest.objects.all()
+
+    # ใช้ Paginator เพื่อแบ่งหน้า
+    paginator = Paginator(medication_requests, 5)  # แสดง 5 รายการต่อหน้า
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'medication_request_list.html', {'page_obj': page_obj})
+
+# ฟังก์ชันแก้ไขคำขอสำหรับแอดมิน
+def edit_medication_request_admin(request, request_id):
+    medication_request = get_object_or_404(MedicationRequest, id=request_id)
+
+    if request.method == 'POST':
+        form = MedicationForm(request.POST, instance=medication_request)
+        if form.is_valid():
+            form.save()  # บันทึกการเปลี่ยนแปลง
+            return redirect('medication_request_list')  # กลับไปที่หน้าประวัติคำขอทั้งหมด
+    else:
+        form = MedicationForm(instance=medication_request)
+
+    return render(request, 'edit_medication_request_admin.html', {'form': form})
+
+# ฟังก์ชันลบคำขอสำหรับแอดมิน
+def delete_medication_request_admin(request, request_id):
+    medication_request = get_object_or_404(MedicationRequest, id=request_id)
+    medication_request.delete()  # ลบคำขอ
+    return redirect('medication_request_list')  # กลับไปที่หน้าประวัติคำขอทั้งหมด
+
+def success_email_liat(request):
+    return render(request, 'success_emil.html')
+
+@login_required
+def articlesuser_view(request):
+    articles = Articles.objects.all()
+    return render(request, 'user_article/articles_user.html', {
+        'articles': articles,
+        'is_admin': request.user.is_staff,
+        'is_medical_staff': request.user.groups.filter(name='Medical Officer').exists()
+    })
+
+def viewuser_article(request, article_id):
+    article = get_object_or_404(Articles, id=article_id)
+    return render(request, 'user_article/view_articleuser.html', {'article': article})
+
+
+
+
+
+@login_required
+def articlesadmin_view(request):
+    articles = Articles.objects.all()
+    return render(request, 'admin_/articles.html', {
+        'articles': articles,
+        'is_admin': request.user.is_staff,
+        'is_medical_staff': request.user.groups.filter(name='Medical Officer').exists()
+    })
+
+def viewuadmin_article(request, article_id):
+    article = get_object_or_404(Articles, id=article_id)
+
+    return render(request, 'admin_/view_article.html', {'article': article})
+
+
+
+@login_required
+@user_passes_test(is_admin_or_medical_staff)
+def add_articleadmin(request):
+    if request.method == 'POST':
+        form = ArticlesForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)  # สร้าง object แต่ยังไม่บันทึกในฐานข้อมูล
+            article.author = request.user      # กำหนดผู้เขียนเป็นผู้ใช้ที่ล็อกอินอยู่
+            article.save()                     # บันทึกบทความในฐานข้อมูล
+            return redirect('articles')        # กลับไปยังหน้ารายการบทความ
+    else:
+        form = ArticlesForm()
+    return render(request, 'admin_/add_article.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin_or_medical_staff)
+def edit_articleadmin(request, article_id):
+    article = get_object_or_404(Articles, id=article_id)
+
+    if request.method == 'POST':
+        form = ArticlesForm(request.POST, request.FILES, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('articles')
+    else:
+        form = ArticlesForm(instance=article)
+
+    return render(request, 'admin_/edit_article.html', {'form': form, 'article': article})
+
+# Delete an article (only admin or medical staff)
+@login_required
+@user_passes_test(is_admin_or_medical_staff)
+def delete_articleadmin(request, article_id):
+    article = get_object_or_404(Articles, id=article_id)
+    if request.method == 'POST':
+        article.delete()
+        return redirect('articles_list')
+    return render(request, 'admin_/delete_article.html', {'article': article})
+
+
+
+def upload_file_test_admin(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        # ลบข้อมูลใน session ก่อนการอัปโหลดใหม่
+        if not request.user.is_authenticated:
+            return redirect('/login/')
+
+        # อัปโหลดไฟล์ใหม่
+        file1 = request.FILES['file']
+        fs = FileSystemStorage()
+        filename = fs.save(file1.name, file1)
+        file_path = fs.path(filename)
+
+        # โหลดข้อมูลจากไฟล์
+        df = load_data1(file_path)
+        if df is None:
+            return render(request, 'upload11.html', {"error": "Invalid file format. Please upload CSV or XLSX."})
+
+        # เก็บข้อมูลใน session
+        request.session['file_path'] = file_path
+        request.session['df'] = df.to_dict(orient='records')
+
+        # คำนวณข้อมูลต่างๆ เช่น จำนวนผู้ป่วย
+        total_count = len(df)
+
+        # 🟢 แยกข้อมูลส่วนตัวออกจากฟีเจอร์ที่ใช้วินิจฉัย
+        personal_info = df[['Name', 'Address', 'Phone', 'Gender']]
+        diagnostic_features = df.drop(columns=['Name', 'Address', 'Phone', 'Gender'], errors='ignore')
+        diagnostic_features = diagnostic_features.drop(columns=['Outcome'], errors='ignore')
+
+        # 🟢 ค้นหาตามเพศและที่อยู่ (ถ้ามีการกรอก)
+        gender_filter = request.GET.get('gender', '')
+        address_filter = request.GET.get('address', '')
+
+        # กรองข้อมูลตามเงื่อนไข
+        if gender_filter:
+            personal_info = personal_info[personal_info['Gender'].str.contains(gender_filter, case=False, na=False)]
+
+        if address_filter:
+            personal_info = personal_info[personal_info['Address'].str.contains(address_filter, case=False, na=False)]
+
+        # 🟢 โหลดโมเดลล่าสุด
+        model, model_date = load_latest_model()
+        if model is None:
+            return render(request, 'upload11.html', {"error": "No trained model available."})
+
+        # 🟢 ประมวลผลฟีเจอร์
+        diagnostic_features = preprocess_data1(diagnostic_features)
+
+        # 🟢 ทำนายผล
+        predictions = model.predict(diagnostic_features)
+        diagnostic_features['Predicted_Outcome'] = predictions
+
+        # 🟢 คำนวณจำนวนผู้ป่วยที่มีความเสี่ยงและไม่มีความเสี่ยง
+        risk_count = (predictions == 1).sum()
+        no_risk_count = (predictions == 0).sum()
+
+        # แยกอายุของกลุ่มเสี่ยงและไม่เสี่ยง
+        age_risk_counts = diagnostic_features[diagnostic_features['Predicted_Outcome'] == 1][
+            'Age'].value_counts().sort_index()
+        age_no_risk_counts = diagnostic_features[diagnostic_features['Predicted_Outcome'] == 0][
+            'Age'].value_counts().sort_index()
+
+        # สร้างกลุ่มอายุทั้งหมด (0-4) และเติมค่า 0 ถ้ากลุ่มไหนไม่มีข้อมูล
+        all_age_groups = pd.Series(0, index=[0, 1, 2, 3, 4])
+        age_risk_counts = all_age_groups.add(age_risk_counts, fill_value=0)
+        age_no_risk_counts = all_age_groups.add(age_no_risk_counts, fill_value=0)
+
+        # แปลงเป็น list สำหรับส่งไปยัง template
+        age_risk_data = age_risk_counts.tolist()
+        age_no_risk_data = age_no_risk_counts.tolist()
+
+        bmi_data = diagnostic_features['BMI'].value_counts().sort_index().tolist()
+        glucose_data = diagnostic_features['Glucose'].value_counts().sort_index().tolist()
+
+        # 🟢 รวมข้อมูลส่วนบุคคล + ฟีเจอร์ + ผลลัพธ์กลับคืนมา
+        df = pd.concat([personal_info, diagnostic_features], axis=1)
+
+        # 🟢 แปลงเป็น List ของ Dictionary
+        df_records = df.to_dict(orient='records')
+
+        # เก็บข้อมูลใน session
+        request.session['df_records'] = df_records
+        request.session['total_count'] = total_count
+        request.session['bmi_data'] = bmi_data
+        request.session['glucose_data'] = glucose_data
+
+
+        # 🟢 ตรวจสอบการเข้าสู่ระบบของผู้ใช้
+        for index, row in df.iterrows():
+            diagnosis = Diagnosis_N(
+                user=request.user,  # Optionally save the user (if authenticated)
+                bmi=row['BMI'],
+                blood_pressure=row['BloodPressure'],
+                pregnancies=row['Pregnancies'],
+                glucose=row['Glucose'],
+                skin_thickness=row['SkinThickness'],
+                insulin=row['Insulin'],
+                diabetes_pedigree_function=row['DiabetesPedigreeFunction'],
+                age=row['Age'],
+                prediction='เสี่ยง' if row['Predicted_Outcome'] == 1 else 'ไม่เสี่ยง',
+                name=row['Name'],  # เก็บชื่อ
+                address=row['Address'],  # เก็บที่อยู่
+                phone=row['Phone'],  # เก็บเบอร์โทรศัพท์
+                gender=row['Gender']  # เก็บเพศ
+            )
+            diagnosis.save()
+
+        return redirect('analysis_admin')  # เปลี่ยนหน้าไปยังหน้าแสดงผลข้อมูล (analysis)
+
+    return render(request, 'admin/upload_admin.html')
+
+def analyze_data_admin(request):
+    if request.GET.get('reset_filter') == '1':
+        # ล้างค่าตัวกรองจาก session
+        request.session.pop('gender_filter', None)
+        request.session.pop('address_filter', None)
+        return redirect('analysis11')  # โหลดข้อมูลใหม่ทั้งหมด
+    # ดึงข้อมูลจาก session
+    df_records = request.session.get('df_records', None)
+    if not df_records:
+        return redirect('upload11')  # ถ้าไม่มีข้อมูลให้กลับไปหน้าอัปโหลด
+
+    # ค่าตัวกรองจาก GET (เก็บค่าตัวกรองเดิมไว้)
+    gender_filter = request.GET.get('gender', '')
+    address_filter = request.GET.get('address', '')
+
+    # กรองข้อมูลตามเพศ
+    if gender_filter:
+        df_records = [record for record in df_records if record.get('Gender') == gender_filter]
+
+    # กรองข้อมูลตามที่อยู่
+    if address_filter:
+        df_records = [record for record in df_records if address_filter.lower() in record.get('Address', '').lower()]
+
+    # 🟢 เก็บค่าตัวกรองใน session เพื่อให้ยังคงอยู่ระหว่างเปลี่ยนหน้า
+    request.session['gender_filter'] = gender_filter
+    request.session['address_filter'] = address_filter
+
+    df = pd.DataFrame(df_records)
+
+    total_count = len(df)
+
+    # 🟢 คำนวณจำนวนเสี่ยง/ไม่เสี่ยงใหม่ทุกครั้ง
+    risk_count = df[df['Predicted_Outcome'] == 1].shape[0]
+    no_risk_count = df[df['Predicted_Outcome'] == 0].shape[0]
+    total_count = df.shape[0]
+
+    # 🟢 คำนวณอายุของกลุ่มเสี่ยงและไม่เสี่ยง
+    age_risk_counts = df[df['Predicted_Outcome'] == 1]['Age'].value_counts().sort_index()
+    age_no_risk_counts = df[df['Predicted_Outcome'] == 0]['Age'].value_counts().sort_index()
+
+    # 🟢 เติมค่า 0 ให้กับช่วงอายุที่ไม่มีข้อมูล
+    all_age_groups = pd.Series(0, index=[0, 1, 2, 3, 4])  # แบ่งช่วงอายุเป็นกลุ่ม 0-4, 5-9, ...
+    age_risk_counts = all_age_groups.add(age_risk_counts, fill_value=0).tolist()
+    age_no_risk_counts = all_age_groups.add(age_no_risk_counts, fill_value=0).tolist()
+
+
+    # ใช้ Paginator สำหรับแบ่งหน้า
+    paginator = Paginator(df_records, 5)  # แสดง 5 รายการต่อหน้า
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # ดึงข้อมูลจาก session เพื่อให้แสดงผลกราฟได้
+
+    model, model_date = load_latest_model()
+    bmi_data = request.session.get('bmi_data', [])
+    glucose_data = request.session.get('glucose_data', [])
+
+    # ส่งค่าตัวกรองไปยัง template และใช้ urlencode เพื่อให้ค่าค้นหายังคงอยู่
+    filter_params = f"gender={gender_filter}&address={address_filter}"
+
+    return render(request, 'admin/analysis_admin.html', {
+        'df_records': df_records,
+        'page_obj': page_obj,
+        'gender_filter': gender_filter,
+        'address_filter': address_filter,
+        'risk_count': risk_count,
+        'no_risk_count': no_risk_count,
+        'total_count': total_count,
+        'bmi_data': bmi_data,
+        'glucose_data': glucose_data,
+        'age_risk_data': age_risk_counts,
+        'age_no_risk_data': age_no_risk_counts,
+        'model_date': model_date,
+        'filter_params': filter_params
+    })
+
+
+def diagnose_form_admin(request):
+    return render(request, 'admin/diagnose_diabetes_admin.html')
+
+
+def diagnose_diabetes_admin(request):
+    if request.method == 'POST':
+        try:
+            pregnancies = int(request.POST.get('Pregnancies') or 0)
+            glucose = int(request.POST.get('Glucose') or 0)
+            blood_pressure = int(request.POST.get('BloodPressure') or 0)
+            skin_thickness = int(request.POST.get('SkinThickness') or 0)
+            insulin = int(request.POST.get('Insulin') or 0)
+            bmi = float(request.POST.get('BMI') or 0)
+            dpf = float(request.POST.get('DiabetesPedigreeFunction') or 0)
+            age = int(request.POST.get('Age') or 0)
+
+            # แปลงค่าที่กรอกมาเป็นหมวดหมู่ที่ 0, 1, 2, 3
+            bmi_category = categorize_bmi_value(bmi)
+            glucose_category = categorize_glucose_value(glucose)
+            blood_pressure_category = categorize_blood_pressure_value(blood_pressure)
+            skin_thickness_category = categorize_skin_thickness_value(skin_thickness)
+            insulin_category = categorize_insulin_value(insulin)
+            dpf_category = categorize_dpf_value(dpf)
+            age_category = categorize_age_value(age)
+            pregnancies_category = categorize_pregnancies_value(pregnancies)
+
+            # เตรียมข้อมูล input สำหรับโมเดล
+            input_data = [[pregnancies_category, glucose_category, blood_pressure_category,
+                           skin_thickness_category, insulin_category, bmi_category,
+                           dpf_category, age_category]]
+
+            # โหลดโมเดลล่าสุด
+            model, uploaded_at = load_latest_model()
+
+            if not model:
+                return render(request, 'admin/diagnose_diabetes_admin.html', {'error': "ยังไม่มีโมเดลที่อัปโหลด กรุณาอัปโหลดโมเดลก่อน."})
+
+            # ทำนายผล
+            rf_pred = model.predict(input_data)
+            predictions = 'เสี่ยง' if rf_pred[0] == 1 else 'ไม่เสี่ยง'
+
+            # สร้าง dictionary สำหรับแสดงค่าที่แปลงแล้ว
+            categorized_data = {
+                'Pregnancies': pregnancies_category,
+                'Glucose': glucose_category,
+                'Blood Pressure': blood_pressure_category,
+                'Skin Thickness': skin_thickness_category,
+                'Insulin': insulin_category,
+                'BMI': bmi_category,
+                'Diabetes Pedigree Function': dpf_category,
+                'Age': age_category
+            }
+
+            # เพิ่มข้อมูลที่กรอกก่อนแปลง
+            input_data_before_categorization = {
+                'Pregnancies': pregnancies,
+                'Glucose': glucose,
+                'Blood Pressure': blood_pressure,
+                'Skin Thickness': skin_thickness,
+                'Insulin': insulin,
+                'BMI': bmi,
+                'Diabetes_Pedigree_Function': dpf,
+                'Age': age
+            }
+
+            # Save the diagnosis result to the database
+            diagnosis = Diagnosis_N(
+                user=request.user,  # Save the user (if applicable)
+                bmi=bmi,
+                blood_pressure=blood_pressure,
+                pregnancies=pregnancies,
+                glucose=glucose,
+                skin_thickness=skin_thickness,
+                insulin=insulin,
+                diabetes_pedigree_function=dpf,
+                age=age,
+                prediction=predictions
+            )
+            diagnosis.save()
+
+            return render(request, 'admin/result_admin.html', {
+                'results': predictions,
+                'categorized_data': categorized_data,  # แสดงค่าที่แปลงแล้ว
+                'input_data_before_categorization': input_data_before_categorization,  # แสดงค่าก่อนแปลง
+                'uploaded_at': uploaded_at  # แสดงเวลาที่อัปโหลดโมเดล
+            })
+
+        except ValueError as e:
+            return render(request, 'admin/diagnose_diabetes_admin.html', {'error': f"กรุณากรอกข้อมูลที่ถูกต้อง: {e}"})
+
+    return render(request, 'admin/diagnose_diabetes_admin.html')

@@ -1,12 +1,120 @@
 {% extends 'base_docter.html' %}
+
 {% block content %}
+<style>
+    /* Page Title */
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #2C3E50;
+        text-align: center;
+    }
 
-<h2>ข้อมูลเสี่ยง/ไม่เสี่ยง - {{ age_category | title }} ({{ risk_category | title }})</h2>
+    /* Primary Text Color */
+    .text-primary {
+        color: #3498DB;
+    }
 
-<ul>
-    {% for record in data %}
-        <li>{{ record.name }} - {{ record.age }} ปี - {{ record.prediction }}</li>
-    {% endfor %}
-</ul>
+    /* Text Color for 'warning' items (e.g., risk level) */
+    .text-warning {
+        color: #ffe04b;
+    }
+
+    /* Background and Styling for Risk Summary Box */
+    .risk-summary {
+        background-color: #F4F6F7;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    /* Table Styling */
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    /* Styling for Risk Level Badges */
+    .bg-danger {
+        background-color: #E74C3C !important;
+        color: white;
+    }
+
+    .bg-success {
+        background-color: #2ECC71 !important;
+        color: white;
+    }
+
+    /* Pagination Container Styling */
+    .pagination-container {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination-container .btn {
+        margin: 0 5px;
+    }
+
+    .pagination-container .page-info {
+        margin-top: 10px;
+    }
+
+    /* Custom Styling for Table Container */
+    .table-container {
+        margin-top: 30px;
+        width: 100%;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<div class="container">
+    <h2 class="page-title">รายชื่อตามกลุ่มอายุ - <span class="black">{{ age_category | title }}</span> (<span class="black">{{ risk_category | title }}</span>)</h2>
+
+    <div class="risk-summary">
+        <div class="table-container">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ชื่อ</th>
+                        <th>อายุ</th>
+                        <th>การทำนาย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in data %}
+                        <tr>
+                            <td>{{ record.name }}</td>
+                            <td>{{ record.age }} ปี</td>
+                            <td>
+                                <span class="badge {% if record.prediction == 'เสี่ยง' %}bg-danger{% else %}bg-success{% endif %}">
+                                    {{ record.prediction }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-container">
+            {% if data.has_previous %}
+                <a href="?page=1" class="btn btn-primary btn-sm">หน้าแรก</a>
+                <a href="?page={{ data.previous_page_number }}" class="btn btn-primary btn-sm">ย้อนกลับ</a>
+            {% endif %}
+            <span class="page-info">Page {{ data.number }} of {{ data.paginator.num_pages }}</span>
+            {% if data.has_next %}
+                <a href="?page={{ data.next_page_number }}" class="btn btn-primary btn-sm">หน้าถัดไป</a>
+                <a href="?page={{ data.paginator.num_pages }}" class="btn btn-primary btn-sm">หน้าสุดท้าย</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}

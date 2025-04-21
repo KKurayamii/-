@@ -4,6 +4,7 @@
         <h2 class="mb-4">แดชบอร์ดแอดมิน</h2>
 
         <div class="row mt-4">
+            <!-- Card for Total Users -->
             <div class="col-md-4">
                 <div class="card shadow-lg p-3 mb-4 bg-white rounded">
                     <div class="card-body">
@@ -12,6 +13,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Card for Total Articles -->
             <div class="col-md-4">
                 <div class="card shadow-lg p-3 mb-4 bg-white rounded">
                     <div class="card-body">
@@ -20,6 +22,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Card for Total Diagnoses -->
             <div class="col-md-4">
                 <div class="card shadow-lg p-3 mb-4 bg-white rounded">
                     <div class="card-body">
@@ -50,6 +53,7 @@
             </div>
         </div>
 
+        <!-- Gender and Age Risk Charts -->
         <div class="row mb-4">
             <div class="col-md-6 mb-4">
                 <div class="card shadow-lg p-3 bg-white rounded">
@@ -69,161 +73,150 @@
             </div>
         </div>
 
-        <!-- Manage Links -->
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg p-3 bg-white rounded">
-                    <div class="card-body">
-                        <h5 class="card-title">จัดการสมาชิก</h5>
-                        <p class="card-text">เพิ่ม ลบ แก้ไขบทบาท และสิทธิ์ของสมาชิก</p>
-                        <a href="{% url 'manage_users' %}" class="btn btn-primary">ไปที่หน้าจัดการ</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg p-3 bg-white rounded">
-                    <div class="card-body">
-                        <h5 class="card-title">จัดการบทความ</h5>
-                        <p class="card-text">เพิ่ม แก้ไข ลบ บทความสุขภาพ</p>
-                        <a href="{% url 'articles' %}" class="btn btn-primary">ไปที่หน้าจัดการ</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg p-3 bg-white rounded">
-                    <div class="card-body">
-                        <h5 class="card-title">อัพโหลดโมเดลการวินิจฉัย</h5>
-                        <p class="card-text">อัปโหลด แก้ไข และจัดการโมเดลวินิจฉัย</p>
-                        <a href="{% url 'upload_model' %}" class="btn btn-primary">ไปที่หน้าจัดการ</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+             <h1>นัยยะสำคัญของการวินิจฉัยจากโมเดล</h1>
 
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg p-3 bg-white rounded">
-                    <div class="card-body">
-                        <h5 class="card-title">บันทึกสุขภาพ</h5>
-                        <p class="card-text">จัดการข้อมูลสุขภาพของสมาชิก</p>
-                        <a href="{% url 'health_record_list_admin' %}" class="btn btn-primary">ไปที่หน้าจัดการ</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg p-3 bg-white rounded">
-                    <div class="card-body">
-                        <h5 class="card-title">การแจ้งเตือนสุขภาพ</h5>
-                        <p class="card-text">เพิ่ม ลบ แก้ไข การแจ้งเตือนยาและการตรวจสุขภาพ</p>
-                        <a href="{% url 'admin_notification_list' %}" class="btn btn-primary">ไปที่หน้าจัดการ</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg p-3 bg-white rounded">
-                    <div class="card-body">
-                        <h5 class="card-title">รายงานผลวินิจฉัย</h5>
-                        <p class="card-text">ดูรายงานผลการวินิจฉัยของสมาชิก</p>
-                        <a href="{% url 'diagnosis_report' %}" class="btn btn-primary">ไปที่รายงาน</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+   {% if feature_image_base64 %}
+    <img src="data:image/png;base64,{{ feature_image_base64 }}" alt="Feature Importance Graph">
+{% else %}
+    <p>Error: Unable to display image</p>
+{% endif %}
+
+   <center><p>อัพเดตโมเดลวันที่: {{ uploaded_at }}</p></center>
+
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // User Chart
-    var ctx1 = document.getElementById('userChart').getContext('2d');
-    var userChart = new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: {{ user_labels|safe }},
-            datasets: [{
-                label: 'จำนวนสมาชิกใหม่',
-                data: {{ user_counts|safe }},
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true }
-    });
-
-    // Diagnosis Chart (Doughnut)
-    let labels = {{ diagnosis_labels|safe }};
-    let counts = {{ diagnosis_counts|safe }};
-    let riskCount = 0;
-    let noRiskCount = 0;
-
-    // Combining "Risk" and "No Risk"
-    for (let i = 0; i < labels.length; i++) {
-        if (labels[i] === 'Risk' || labels[i] === 'เสี่ยง') {
-            riskCount += counts[i];
-            labels[i] = 'เสี่ยง';
-        }
-        if (labels[i] === 'No Risk' || labels[i] === 'ไม่เสี่ยง') {
-            noRiskCount += counts[i];
-            labels[i] = 'ไม่เสี่ยง';
-        }
-    }
-
-    labels = ['เสี่ยง', 'ไม่เสี่ยง'];
-    counts = [riskCount, noRiskCount];
-
-    var ctx2 = document.getElementById('diagnosisChart').getContext('2d');
-    var diagnosisChart = new Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: counts,
-                backgroundColor: ['#ff0000', '#008000']
-            }]
-        },
-        options: { responsive: true }
-    });
-
-    // Gender Chart (Pie)
-    var ctxGender = document.getElementById('genderChart').getContext('2d');
-    var genderChart = new Chart(ctxGender, {
-        type: 'pie',
-        data: {
-            labels: ['ชาย', 'หญิง', 'อื่นๆ'],
-            datasets: [{
-                data: {{ gender_counts|safe }},
-                backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
-            }]
-        },
-        options: { responsive: true }
-    });
-
-    // Age Risk Chart (Bar)
-    var ctx = document.getElementById('ageRiskChart').getContext('2d');
-    var ageRiskChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ age_labels|safe }},
-            datasets: [
-                {
-                    label: 'เสี่ยง',
-                    data: {{ age_risk_counts|safe }},
-                    backgroundColor: 'rgb(255,0,0)',
-                },
-                {
-                    label: 'ไม่เสี่ยง',
-                    data: {{ age_no_risk_counts|safe }},
-                    backgroundColor: 'rgb(0,128,0)',
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // User Chart
+        var ctx1 = document.getElementById('userChart').getContext('2d');
+        var userChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: {{ user_labels|safe }},
+                datasets: [{
+                    label: 'จำนวนสมาชิกใหม่',
+                    data: {{ user_counts|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' คน';
+                            }
+                        }
+                    }
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: { stacked: true },
-                y: { stacked: true, beginAtZero: true }
+            }
+        });
+
+        // Diagnosis Chart (Doughnut)
+        let labels = {{ diagnosis_labels|safe }};
+        let counts = {{ diagnosis_counts|safe }};
+        let riskCount = 0;
+        let noRiskCount = 0;
+
+        // Combining "Risk" and "No Risk"
+        for (let i = 0; i < labels.length; i++) {
+            if (labels[i] === 'Risk' || labels[i] === 'เสี่ยง') {
+                riskCount += counts[i];
+                labels[i] = 'เสี่ยง';
+            }
+            if (labels[i] === 'No Risk' || labels[i] === 'ไม่เสี่ยง') {
+                noRiskCount += counts[i];
+                labels[i] = 'ไม่เสี่ยง';
             }
         }
-    });
-</script>
+
+        labels = ['เสี่ยง', 'ไม่เสี่ยง'];
+        counts = [riskCount, noRiskCount];
+
+        var ctx2 = document.getElementById('diagnosisChart').getContext('2d');
+        var diagnosisChart = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: ['#ff0000', '#008000'],
+                    cutoutPercentage: 60
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' รายการ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gender Chart (Pie)
+        var ctxGender = document.getElementById('genderChart').getContext('2d');
+        var genderChart = new Chart(ctxGender, {
+            type: 'pie',
+            data: {
+                labels: ['ชาย', 'หญิง', 'อื่นๆ'],
+                datasets: [{
+                    data: {{ gender_counts|safe }},
+                    backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // Age Risk Chart (Bar)
+        var ctx = document.getElementById('ageRiskChart').getContext('2d');
+        var ageRiskChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ age_labels|safe }},
+                datasets: [
+                    {
+                        label: 'เสี่ยง',
+                        data: {{ age_risk_counts|safe }},
+                        backgroundColor: 'rgb(255,0,0)',
+                    },
+                    {
+                        label: 'ไม่เสี่ยง',
+                        data: {{ age_no_risk_counts|safe }},
+                        backgroundColor: 'rgb(0,128,0)',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw + ' รายการ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock %}

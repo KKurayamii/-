@@ -1,3 +1,7 @@
+{% extends 'base_docter.html' %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +29,7 @@
         }
         h1 {
             text-align: center;
-            color: #004AAD;
+            color: #000000;
         }
         .form-group {
             margin-bottom: 15px;
@@ -33,7 +37,7 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #004AAD;
+            color: #000000;
         }
         .form-group input, .form-group textarea {
             width: 100%;
@@ -93,13 +97,9 @@
             <input type="file" name="image" id="image" accept="image/*">
         </div>
 
-        <div class="form-group">
-            <label for="video_url">ลิงก์วิดีโอ (YouTube/Vimeo)</label>
-            <input type="url" name="video_url" id="video_url" placeholder="วางลิงก์วิดีโอที่นี่">
-        </div>
-
         <button type="submit" class="button">บันทึกบทความ</button>
     </form>
 
-    <a href="{% url 'articles_list' %}" class="btn-secondary">กลับไปที่บทความทั้งหมด</a>
 </div>
+
+{% endblock %}

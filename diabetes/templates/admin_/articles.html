@@ -1,0 +1,155 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<style>
+/* Button Styles */
+.btn-gradient {
+    background: linear-gradient(45deg, #FF7E5F, #feb47b);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    transition: background 0.3s;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(45deg, #feb47b, #FF7E5F);
+}
+
+.btn-primary {
+    background-color: #3498DB;
+    color: white;
+    border-radius: 30px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #2980B9;
+}
+
+.btn-warning {
+    background-color: #F39C12;
+    color: white;
+    border-radius: 30px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border: none;
+}
+
+.btn-warning:hover {
+    background-color: #E67E22;
+}
+
+.btn-danger {
+    background-color: #E74C3C;
+    color: white;
+    border-radius: 30px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #C0392B;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.article-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.article-content {
+    font-size: 1rem;
+    color: #666;
+}
+
+.article-image img {
+    border-radius: 10px;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.article-video iframe {
+    border-radius: 10px;
+}
+
+</style>
+
+<div class="container my-5">
+    <!-- Header with Add Article Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-title text-primary">บทความทั้งหมด</h2>
+        {% if is_admin or is_medical_staff %}
+            <a href="{% url 'add_article' %}" class="btn btn-gradient btn-lg text-white">เพิ่มบทความ</a>
+        {% endif %}
+    </div>
+
+    <!-- Articles Section -->
+    <div class="row">
+        {% for article in articles %}
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card shadow-lg border-light rounded">
+                    <div class="card-body">
+                        <!-- Article Title -->
+                        <h3 class="article-title">{{ article.title }}</h3>
+
+                        <!-- Display image if available -->
+                        {% if article.image %}
+                            <div class="article-image mb-3">
+                                <img src="{{ article.image.url }}" alt="Article Image" class="img-fluid rounded">
+                            </div>
+                        {% endif %}
+
+                        <!-- Display video if available -->
+                        {% if article.video_url %}
+                            <div class="article-video mb-3">
+                                <iframe width="100%" height="200" src="{{ article.video_url|safe }}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        {% endif %}
+
+                        <!-- Article Content (truncated) -->
+                        <p class="article-content text-muted">{{ article.content|truncatewords:30 }}</p>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <a href="{% url 'view_article_admin' article.id %}" class="btn btn-primary btn-sm">อ่านเพิ่มเติม</a>
+
+                            {% if is_admin or is_medical_staff %}
+                                <a href="{% url 'edit_article' article.id %}" class="btn btn-warning btn-sm">แก้ไข</a>
+                            {% endif %}
+
+                            {% if is_admin %}
+                                <form method="POST" action="{% url 'delete_article' article.id %}" style="display:inline;" onsubmit="return confirm('ยืนยันการลบบทความ?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="text-center text-muted">ไม่มีบทความในขณะนี้</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+

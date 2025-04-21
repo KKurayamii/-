@@ -1,0 +1,81 @@
+{% extends 'base_user.html' %}
+
+{% block content %}
+
+<h2>ประวัติการแจ้งเตือน</h2>
+
+<table class="styled-table">
+    <thead>
+        <tr>
+            <th>การแจ้งเตือน</th>
+            <th>ข้อความเพิ่มเติม</th>
+            <th>วันที่ส่งแจ้งเตือน</th>
+            <th>การจัดการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in medication_requests %}
+            <tr>
+                <td>{{ request.medication_name }}</td>
+                <td>{{ request.message }}</td>
+                <td>{{ request.date_sent }}</td>
+                <td>
+                    <a href="{% url 'edit_medication_request' request.id %}" class="edit-btn">แก้ไข</a> |
+                    <a href="{% url 'delete_medication_request' request.id %}" class="delete-btn">ลบ</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+
+.styled-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 20px auto; /* ทำให้ตารางอยู่กึ่งกลาง */
+    font-size: 1em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+    .styled-table thead tr {
+        background-color: #007bff;
+        color: white;
+        text-align: left;
+    }
+
+    .styled-table th, .styled-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .styled-table tbody tr:hover {
+        background-color: #f2f2f2;
+    }
+
+    .edit-btn {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .delete-btn {
+        color: #dc3545;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .edit-btn:hover, .delete-btn:hover {
+        text-decoration: underline;
+    }
+</style>
+
+{% endblock %}

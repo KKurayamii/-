@@ -1,5 +1,8 @@
+{% extends 'base_docter.html' %}
+{% block content %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +10,16 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
+        /* Body styling */
         body {
-            font-family: Montaga, sans-serif;
+            font-family: 'Montaga', sans-serif;
             background: linear-gradient(to bottom, #5ED0E6, #004AAD);
             color: #fff;
             margin: 0;
             padding: 0;
         }
+
+        /* Container styling */
         .container {
             max-width: 800px;
             margin: 50px auto;
@@ -23,39 +29,86 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             color: #000;
         }
+
+        /* Heading styling */
         h1 {
-            color: #004AAD;
+            color: #000000;
             text-align: center;
             margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: bold;
         }
+
+        /* Form styling */
         form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
+
+        form input, form textarea, form select, form url {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        form input:focus, form textarea:focus, form select:focus {
+            border-color: #004AAD;
+            outline: none;
+        }
+
+        /* Button styling */
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #004AAD;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #003080;
         }
+
+        /* Link styling */
         a {
             display: block;
             text-align: center;
             margin-top: 20px;
             text-decoration: none;
             color: #004AAD;
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 500;
         }
+
         a:hover {
             text-decoration: underline;
         }
+
+        /* Styling for current image display */
+        .current-image {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .current-image p {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .current-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
     </style>
 </head>
 <body>
@@ -64,21 +117,38 @@
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            <!-- แสดงฟอร์มเป็นภาษาไทย -->
+            <div class="form-group">
+                <label for="id_title">หัวเรื่อง</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_content">เนื้อหา</label>
+                {{ form.content }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_image">รูปภาพ</label>
+                {{ form.image }}
+            </div>
 
             <!-- แสดงรูปภาพปัจจุบันถ้ามี -->
             {% if article.image %}
             <div class="current-image">
                 <p>รูปภาพปัจจุบัน:</p>
-                <img src="{{ article.image.url }}" alt="Current Image" style="max-width: 1000px; height: auto;">
+                <img src="{{ article.image.url }}" alt="รูปภาพปัจจุบัน">
+            </div>
+            {% else %}
+            <div class="current-image">
+                <p>ไม่มีรูปภาพในบทความนี้</p>
             </div>
             {% endif %}
 
             <button type="submit">บันทึกการเปลี่ยนแปลง</button>
         </form>
-
-        <a href="{% url 'articles' %}">กลับไปยังหน้ารายการบทความ</a>
     </div>
 </body>
 </html>
 
+{% endblock %}

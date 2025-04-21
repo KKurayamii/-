@@ -44,32 +44,11 @@ class Articles(models.Model):
     content = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name='articles')
     image = models.ImageField(upload_to='article_images/', null=True, blank=True)
-    video_url = models.URLField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    average_rating = models.FloatField(default=0)
-    rating = models.FloatField(default=0)
 
     def formatted_content(self):
         return markdown.markdown(self.content)
-
-class ArticleRating(models.Model):
-    article = models.ForeignKey(Articles, on_delete=models.CASCADE, related_name="ratings")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
-    score = models.IntegerField(default=0)
-
-    def save(self, *args, **kwargs):
-        # อัปเดตค่า average_rating ของบทความ
-        super().save(*args, **kwargs)
-        self.update_article_rating()
-
-    def update_article_rating(self):
-        ratings = ArticleRating.objects.filter(article=self.article)
-        average_rating = ratings.aggregate(models.Avg('rating'))['rating__avg']
-        self.article.average_rating = average_rating
-        self.article.save()
-
 
 class HealthRecord1(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -146,3 +125,14 @@ class MLModel(models.Model):
 
     def __str__(self):
         return f'Model uploaded at {self.uploaded_at}'
+
+class MedicationRequest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # ผู้ใช้ที่ส่งคำขอ
+    medication_name = models.CharField(max_length=255)  # ชื่อยา
+    message = models.TextField()  # ข้อความเตือน
+    date_sent = models.DateTimeField()  # วันที่และเวลาที่ต้องการส่งอีเมล
+    is_active = models.BooleanField(default=True)  # ใช้ตรวจสอบว่าคำขอนี้ยังต้องส่งอยู่หรือไม่
+    daily_notification = models.BooleanField(default=False)  # แจ้งเตือนทุกวัน (เช็คเมื่ออยากให้แจ้งเตือนทุกวัน)
+
+    def __str__(self):
+        return f"Medication request for {self.medication_name} by {self.user.username}"

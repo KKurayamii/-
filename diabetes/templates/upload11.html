@@ -13,56 +13,99 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
         }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
         h2 {
             color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+            text-align: center;
         }
+
+        .instructions {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .instructions u {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
         form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: auto;
-        }
-        input[type="file"] {
-            margin: 10px 0;
             width: 100%;
-            padding: 10px;
-            border: 1px solid #dddddd;
-            border-radius: 4px;
+            margin: 0 auto;
         }
+
+        input[type="file"] {
+            margin: 15px 0;
+            padding: 12px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+        }
+
         button {
             background-color: #004AAD;
             color: white;
-            padding: 10px 15px;
+            padding: 12px 18px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             width: 100%;
+            font-size: 16px;
         }
+
         button:hover {
             background-color: #003688;
         }
+
         p.error {
             color: red;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        small {
+            color: #666;
         }
     </style>
 </head>
 <body>
-   <center><h2>วินิจฉัยแบบกลุ่ม</h2></center>
-    <center><small>การอัพโหลดไฟล์ต้องเป็นสกุล Csv/Xlsx</small></center>
-   <u>
-    <center><small>โดยที่ควรมีตัวแปรในชุดข้อมูล เช่น Name,Address,Phone,Gender,Age,Pregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI และ DiabetesPedigreeFunction สำหรับการวินิจฉัยแบบกลุ่ม</small></center>
-    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+<div class="container">
+    <h2>วินิจฉัยแบบกลุ่ม</h2>
+    <p class="instructions">การอัพโหลดไฟล์ต้องเป็นสกุล Csv/Xlsx</p>
+    <p class="instructions"><u>โดยที่ควรมีตัวแปรในชุดข้อมูล เช่น Name, Address, Phone, Gender, Age, Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI และ DiabetesPedigreeFunction สำหรับการวินิจฉัยแบบกลุ่ม</u></p>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="file" required>
         <input type="hidden" name="model" value="rf">
         <button type="submit">อัพโหลดและวินิจฉัย</button>
     </form>
+</div>
+
 </body>
 </html>
 
-     {% endblock %}
+{% endblock %}

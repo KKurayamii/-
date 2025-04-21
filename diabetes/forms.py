@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 #from flatpickr import DateTimePickerInput
 from .models import *
 from django.utils.timezone import now
+from django.contrib.auth.forms import SetPasswordForm
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -19,13 +20,11 @@ class ProfileUpdateForm(forms.ModelForm):
 class ArticlesForm(forms.ModelForm):
     class Meta:
         model = Articles
-        fields = ['title', 'content', 'image', 'video_url']
+        fields = ['title', 'content', 'image', ]
 
-class RatingForm(forms.Form):
-    rating = forms.ChoiceField(
-        choices=[(str(i), f"{i} ดาว") for i in range(1, 6)],
-        widget=forms.RadioSelect
-    )
+        title = forms.CharField(label="หัวเรื่อง", widget=forms.TextInput(attrs={'class': 'form-control'}))
+        content = forms.CharField(label="เนื้อหา", widget=forms.Textarea(attrs={'class': 'form-control'}))
+        image = forms.ImageField(label="รูปภาพ", required=False)
 
 class CustomUserForm(forms.ModelForm):
     class Meta:
@@ -42,13 +41,9 @@ class CustomUserForm(forms.ModelForm):
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            # เอาข้อความผิดพลาดทั้งหมดออก
-            for field in self.fields.values():
-                field.error_messages = {
-                    'required': '',
-                    'max_length': '',
-                    'invalid': '',
-                }
+            # ลบคำเตือนของ username
+            self.fields['username'].error_messages = {'required': None, 'unique': None}
+
 
 class RoleForm(forms.ModelForm):
     class Meta:
@@ -62,6 +57,10 @@ class ModelUploadForm(forms.ModelForm):
     class Meta:
         model = MLModel
         fields = ['name', 'model_file']
+        labels = {
+            'name': 'ชื่อโมเดล',
+            'model_file': 'ไฟล์โมเดล'
+        }
 
 
 class HealthRecord1Form(forms.ModelForm):
@@ -88,4 +87,26 @@ class HealthRecordForm2(forms.ModelForm):
     class Meta:
         model = HealthRecord1
         fields = '__all__'
+
+
+class MedicationForm(forms.ModelForm):
+    class Meta:
+        model = MedicationRequest
+        fields = ['medication_name', 'message', 'date_sent']  # เพิ่ม date_sent ให้กรอกได้
+        widgets = {
+            'date_sent': forms.DateTimeInput(attrs={'type': 'datetime-local'}),  # ใช้ widget สำหรับการกรอกวันเวลา
+        }
+
+class ResetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        label='รหัสผ่านใหม่',
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        help_text='',
+    )
+    new_password2 = forms.CharField(
+        label='พิมรหัสผ่านใหม่อีกครั้ง',
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        help_text='',
+    )
+
 

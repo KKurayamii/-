@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnosis Result</title>
+    <title>ผลการวินิจฉัย</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +12,7 @@
         }
         h1 {
             color: #4682b4;
+            text-align: center;
         }
         .result-box {
             padding: 20px;
@@ -29,6 +30,7 @@
         .result-box .result {
             font-weight: bold;
             font-size: 2em;
+            color: #4682b4;
         }
         .back-link {
             margin-top: 20px;
@@ -44,14 +46,14 @@
     </style>
 </head>
 <body>
-    <h1>Diagnosis Result</h1>
+    <h1>ผลการวินิจฉัย</h1>
 
     <div class="result-box">
-        <p>Your diagnosis result is:</p>
+        <p>ผลการวินิจฉัยของคุณคือ:</p>
         <p class="result">{{ result }}</p>
-        <p>Model Used: {{ model_name }}</p> <!-- แสดงชื่อโมเดล -->
+        <p>โมเดลที่ใช้: {{ model_name }}</p> <!-- แสดงชื่อโมเดล -->
     </div>
 
-    <a href="{% url 'diagnose' %}" class="back-link">Go Back to Diagnose</a>
+    <a href="{% url 'diagnose' %}" class="back-link">กลับไปที่หน้าวินิจฉัย</a>
 </body>
 </html>

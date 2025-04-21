@@ -2,16 +2,118 @@
 
 {% block content %}
 <body>
-    <h2>วินิจฉัยความเสี่ยงของเบาหวาน</h2>
-    <form method="POST" action="{% url 'result_t' %}">
+    <h2 class="title">วินิจฉัยความเสี่ยงของเบาหวาน</h2>
+    <form method="POST" action="{% url 'result_doctor' %}" class="container">
         {% csrf_token %}
+        <style>
+            /* ตั้งค่าพื้นฐาน */
+            body {
+                font-family: 'Sarabun', sans-serif;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 20px;
+            }
+
+            /* คอนเทนเนอร์หลัก */
+            .container {
+                max-width: 800px;
+                background: white;
+                padding: 20px;
+                margin: 100px auto;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+            }
+
+            /* หัวข้อ */
+            .title {
+                text-align: center;
+                color: #333;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            /* การตั้งค่า form-group */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+
+            }
+
+            .form-group label {
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #555;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+                background: #f5f5f5;
+            }
+
+            .button-container {
+                display: flex;
+                justify-content: space-between; /* ให้ปุ่มอยู่ห่างกัน */
+                gap: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+            }
+
+            .submit-btn, .reset-btn {
+                width: 48%; /* ปรับความกว้างของปุ่มให้มีขนาดพอเหมาะ */
+                padding: 12px;
+                font-size: 18px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            .submit-btn {
+                background: #004AAD;
+                color: white;
+            }
+
+            .submit-btn:hover {
+                background: #003366;
+            }
+
+            .reset-btn {
+                background: #f0f0f0;
+                color: #555;
+                border: 1px solid #ccc;
+            }
+            .reset-btn:hover {
+                background: #e2e2e2;
+            }
+            .info-button {
+            border: none;
+            background: transparent;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            position: absolute;
+            right: 280px;
+            margin-left: 10px; /* เพิ่มระยะห่างระหว่างช่องกรอกและปุ่ม */
+            margin-top: 22px; /* ขยับปุ่มให้ลงมาจากช่องกรอก */
+        }
+        input[type="text"], input[type="number"], input[type="datetime-local"], select {
+            width: 95%;          /* ขยายช่องกรอกให้ยาวเต็มพื้นที่ */
+            padding: 3px;         /* เพิ่มพื้นที่ในช่องกรอก */
+            box-sizing: border-box; /* ให้ช่องกรอกรวมขนาดกรอบและ padding */
+        }
+        </style>
+
+        <!-- ฟอร์มข้อมูลต่างๆ -->
         <fieldset>
             <legend>คำนวณ ค่าดัชนีมวลกาย (BMI)</legend>
             <div class="form-group">
-                <label>น้ำหนัก (Weight)<span style="color: red;">*</span>:</label>
+                <label for="weight">น้ำหนัก (Weight)<span style="color: red;">*</span>:</label>
                 <input type="number" id="weight" step="0.1" required placeholder="น้ำหนักเป็นกิโลกรัม"
                     data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-                <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกน้ำหนักเป็นกิโลกรัม">
+                <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกน้ำหนักเป็นกิโลกรัม">
                     <i class="fa fa-question-circle"></i>
                 </button>
             </div>
@@ -20,20 +122,20 @@
                 <label>ส่วนสูง (Height)<span style="color: red;">*</span>:</label>
                 <input type="number" id="height" step="0.1" required placeholder="ส่วนสูงเป็นเซนติเมตร"
                     data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
-                <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="right" title="กรอกส่วนสูงเป็นเซนติเมตร">
+                <button type="button" class="info-button" data-bs-toggle="tooltip" data-bs-placement="top" title="กรอกส่วนสูงเป็นเซนติเมตร">
                     <i class="fa fa-question-circle"></i>
                 </button>
             </div>
 
             <div class="form-group">
-    <input type="text" name="BMI" id="bmi" value="{{ last_record11.bmi }}" required readonly
-        placeholder="ผลลัพธิ์การคำนวนจากน้ำหนักและส่วนสูง"
-        title="ค่าผลลัพธิ์ดัชนีมวลกาย จะปรากฎค่าเมื่อมีการกรอกน้ำหนักและส่วนสูง"
-        data-bs-toggle="tooltip" data-bs-placement="top" style="display: none;" />
-</div>
+                <input type="text" name="BMI" id="bmi" value="{{ last_record11.bmi }}" required readonly
+                       placeholder="ผลลัพธิ์การคำนวนจากน้ำหนักและส่วนสูง"
+                       title="ค่าผลลัพธิ์ดัชนีมวลกาย จะปรากฎค่าเมื่อมีการกรอกน้ำหนักและส่วนสูง"
+                       data-bs-toggle="tooltip" data-bs-placement="top" style="display: none;" />
+            </div>
         </fieldset>
 
-        <div class="form-group">
+             <div class="form-group">
             <label>อายุ (Age)<span style="color: red;">*</span>:</label>
             <input type="number" name="Age" value="{{ last_record11.age }}" required placeholder="อายุของบุคคล (ปี)"
                 data-bs-toggle="tooltip" data-bs-placement="top" min="0" />
@@ -121,9 +223,14 @@
             </div>
         </fieldset>
 
-        <button type="reset" class="reset-button">รีเซ็ต</button>
-        <button type="submit" class="submit-button">วินิจฉัย</button>
+         <div class="button-container">
+            <button type="reset" class="reset-btn">รีเซ็ต</button>
+            <button type="submit" class="submit-btn">วินิจฉัย</button>
+        </div>
     </form>
+</body>
+
+
 
 
 <script>

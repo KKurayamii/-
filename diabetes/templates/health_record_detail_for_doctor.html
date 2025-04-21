@@ -1,12 +1,31 @@
-
+{% extends 'base_docter.html' %}
 {% block content %}
-  <h1>Health Record for {{ record.user.username }}</h1>
-  <p><strong>Blood Pressure:</strong> {{ record.blood_pressure }}</p>
-  <p><strong>Weight:</strong> {{ record.weight }}</p>
-  <p><strong>Height:</strong> {{ record.height }}</p>
-  <p><strong>BMI:</strong> {{ record.bmi }}</p>
-  <p><strong>Insulin:</strong> {{ record.insulin }}</p>
-  <p><strong>Fasting Blood Sugar:</strong> {{ record.fasting_blood_sugar }}</p>
-  <p><strong>Last Visit:</strong> {{ record.last_visit_date }}</p>
-  <a href="{% url 'health_record_for_doctor' %}">Back to Records List</a>
+  <div style="max-width: 900px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; color: #333;">บันทึกสุขภาพ - {{ record.user.username }}</h1>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between;">
+      <div style="width: 48%;"><strong>ความดันโลหิต:</strong> {{ record.blood_pressure }} mmHg</div>
+      <div style="width: 48%;"><strong>น้ำหนัก:</strong> {{ record.weight }} กก.</div>
+      <div style="width: 48%;"><strong>ส่วนสูง:</strong> {{ record.height }} ซม.</div>
+      <div style="width: 48%;"><strong>BMI:</strong> {{ record.bmi }}</div>
+      <div style="width: 48%;"><strong>ระดับอินซูลิน:</strong> {{ record.insulin }}</div>
+      <div style="width: 48%;"><strong>น้ำตาลในเลือดขณะอดอาหาร:</strong> {{ record.fasting_blood_sugar }}</div>
+      <div style="width: 48%;"><strong>น้ำตาลในเลือดหลังอาหาร:</strong> {{ record.postprandial_blood_sugar }}</div>
+      <div style="width: 48%;"><strong>HbA1c:</strong> {{ record.hba1c }}</div>
+      <div style="width: 48%;"><strong>BUN:</strong> {{ record.bun }}</div>
+      <div style="width: 48%;"><strong>Creatinine (Cr):</strong> {{ record.cr }}</div>
+      <div style="width: 48%;"><strong>eGFR:</strong> {{ record.egfr }}</div>
+      <div style="width: 48%;"><strong>ไตรกลีเซอไรด์:</strong> {{ record.triglycerides }}</div>
+      <div style="width: 48%;"><strong>คอเลสเตอรอล:</strong> {{ record.cholesterol }}</div>
+      <div style="width: 48%;"><strong>HDL:</strong> {{ record.hdl }}</div>
+      <div style="width: 48%;"><strong>LDL:</strong> {{ record.ldl }}</div>
+      <div style="width: 48%;"><strong>โปรตีนอัลบูมินในปัสสาวะ:</strong> {{ record.albumin_in_urine }}</div>
+      <div style="width: 100%;"><strong>ผลตรวจ EKG:</strong> {{ record.ekg }}</div>
+      <div style="width: 100%;"><strong>ผลเอกซเรย์ปอด:</strong> {{ record.chest_x_ray }}</div>
+      <div style="width: 100%;"><strong>ผลคัดกรองจอประสาทตา:</strong> {{ record.diabetic_retinopathy_screening }}</div>
+      <div style="width: 100%;"><strong>ผลตรวจเท้าสำหรับผู้ป่วยเบาหวาน:</strong> {{ record.diabetic_foot_screening }}</div>
+      <div style="width: 48%;"><strong>วันที่บันทึก:</strong> {{ record.date_recorded }}</div>
+    </div>
+  </div>
 {% endblock %}
+

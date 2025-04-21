@@ -1,0 +1,449 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <center><title>ผลการวินิจฉัย</title></center>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+           .card {
+        border-radius: 10px;
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .card-title {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    .dashboard-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    .table th, .table td {
+        text-align: center;
+    }
+    canvas {
+        margin-top: 20px;
+        width: 100% !important; /* ทำให้กราฟขยายเต็มพื้นที่ */
+        height: auto !important;
+    }
+
+    .graph-row {
+    display: flex;
+    justify-content: space-between; /* กำหนดให้กราฟอยู่ห่างกัน */
+    gap: 20px; /* ระยะห่างระหว่างกราฟ */
+    flex-wrap: wrap; /* หากหน้าจอเล็กลง จะให้กราฟย้ายไปแถวใหม่ */
+}
+
+.graph-section {
+    flex: 1; /* ให้กราฟมีขนาดเท่ากัน */
+    min-width: 300px; /* ขนาดขั้นต่ำ */
+    max-width: 48%; /* ขนาดสูงสุด */
+}
+
+/* ปรับแต่งกราฟ */
+.graph-card {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.graph-container {
+    display: flex;
+    justify-content: center;
+}
+/* Custom styling for the result column */
+.text-danger {
+    color: red;
+}
+
+.text-success {
+    color: green;
+}
+/* CSS สำหรับแถวที่มีความเสี่ยง */
+.table-danger {
+    background-color: #f8d7da; /* สีพื้นหลังแดงอ่อน */
+}
+.table td, .table th {
+    color: #000 !important;  /* เปลี่ยนสีตัวอักษรเป็นสีดำ */
+}
+
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>แดชบอร์ดสรุปผลการวินิจฉัย</h2>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card dashboard-card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-white">จำนวนผู้ป่วยทั้งหมด</h5>
+                <p class="card-text" id="totalCount">{{ total_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-white">ผู้ป่วยที่มีความเสี่ยง</h5>
+                <p class="card-text" id="riskCount">{{ risk_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-white">ผู้ป่วยที่ไม่มีความเสี่ยง</h5>
+                <p class="card-text" id="noRiskCount">{{ no_risk_count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <form method="get" class="d-flex align-items-center">
+    <label for="gender">เพศ:</label>
+    <select name="gender" id="gender" class="form-control">
+        <option value="">ทั้งหมด</option>
+        <option value="Male" {% if gender_filter == "Male" %}selected{% endif %}>ชาย</option>
+        <option value="Female" {% if gender_filter == "Female" %}selected{% endif %}>หญิง</option>
+    </select>
+
+    <label for="address">อำเภอ:</label>
+    <input type="text" name="address" id="address" class="form-control" value="{{ address_filter }}" placeholder="ค้นหาตามอำเภอ">
+
+    <button type="submit" class="btn btn-primary">ค้นหา</button>
+
+    <!-- ปุ่มรีเซ็ตค่าการค้นหา -->
+    <a href="?reset_filter=1" class="btn btn-secondary ml-2">รีเซ็ต</a>
+</form>
+    <!-- ตารางแสดงข้อมูล -->
+    <div class="mt-5">
+        <h2>ผลการวินิจฉัยจากข้อมูลผู้ป่วย</h2>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ชื่อ</th>
+                    <th>ที่อยู่</th>
+                    <th>เบอร์โทรศัพท์</th>
+                    <th>เพศ</th>
+                    <th>ผลการวินิจฉัย</th>
+                </tr>
+            </thead>
+            <tbody>
+                  {% for record in page_obj %}
+                <tr class="{% if record.Predicted_Outcome == 1 %}table-danger{% endif %}"
+                <tr data-toggle="modal" data-target="#patientModal"
+                    data-name="{{ record.Name }}"
+                    data-address="{{ record.Address }}"
+                    data-phone="{{ record.Phone }}"
+                    data-gender="{{ record.Gender }}"
+                    data-outcome="{{ record.Predicted_Outcome }}"
+                    data-age="{{ record.Age }}"
+                    data-bmi="{{ record.BMI }}"
+                    data-glucose="{{ record.Glucose }}"
+                    data-bloodpressure="{{ record.BloodPressure }}"
+                    data-skinthickness="{{ record.SkinThickness }}"
+                    data-pregnancies="{{ record.Pregnancies }}"
+                    data-insulin="{{ record.Insulin }}"
+                    data-dpf="{{ record.DiabetesPedigreeFunction }}">
+                    <td>{{ record.Name }}</td>
+                    <td>{{ record.Address }}</td>
+                    <td>{{ record.Phone }}</td>
+                    <td>{{ record.Gender }}</td>
+                    <td>
+                         {% if record.Predicted_Outcome == 1 %}
+                    <span style="color:red;">มีความเสี่ยง</span>
+                         {% else %}
+                            <span style="color:green;">ไม่เสี่ยง</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">ไม่มีข้อมูลที่จะแสดง</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+<!-- Pagination Controls -->
+<nav aria-label="Page navigation">
+    <ul class="d-flex justify-content-start mt-3">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1&{{ filter_params }}">หน้าแรกสุด</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ filter_params }}">ย้อนกลับ</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">{{ page_obj.number }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ filter_params }}">หน้าถัดไป</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ filter_params }}">หน้าสุดท้าย</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+
+        <div class="caption">
+        <small><center>การเสี่ยงทายเบสออนโมเดล Random Forest ที่ค่าความแม่นยำที่ 82% / อัพเดตโมเดลวันที่ {{ model_date|date:"d M Y H:i" }}</center></small>
+    </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="patientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">ข้อมูลผู้ป่วย</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>ชื่อ (Name):</strong> <span id="modalName"></span></p>
+                        <p><strong>ที่อยู่ (Address):</strong> <span id="modalAddress"></span></p>
+                        <p><strong>เบอร์โทรศัพท์ (Phone):</strong> <span id="modalPhone"></span></p>
+                        <p><strong>เพศ (Gender):</strong> <span id="modalGender"></span></p>
+                        <p><strong>ผลการวินิจฉัย (Prediction):</strong> <span id="modalOutcome"></span></p>
+                        <p><strong>อายุ (Age):</strong> <span id="modalAge"></span></p>
+                        <p><strong>ดัชนีมวลกาย (BMI):</strong> <span id="modalBMI"></span></p>
+                        <p><strong>ระดับน้ำตาล (Glucose):</strong> <span id="modalGlucose"></span></p>
+                        <p><strong>ความดันโลหิต (Blood Pressure):</strong> <span id="modalBloodPressure"></span></p>
+                        <p><strong>ความหนาของผิวหนัง (Skin Thickness):</strong> <span id="modalSkinThickness"></span></p>
+                        <p><strong>จำนวนการตั้งครรภ์ (Pregnancies):</strong> <span id="modalPregnancies"></span></p>
+                        <p><strong>อินซูลิน (Insulin):</strong> <span id="modalInsulin"></span></p>
+                        <p><strong>ฟังก์ชันการสืบทอดเบาหวาน (DPF):</strong> <span id="modalDPF"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- กราฟ -->
+<div class="mt-5">
+    <h2>การกระจายข้อมูล</h2>
+
+    <!-- แถวสำหรับกราฟ -->
+    <div class="graph-row">
+        <!-- กราฟของผู้ที่มีความเสี่ยง -->
+        <div class="graph-section">
+            <div class="graph-card">
+                <h3>จำนวนของผู้ที่มีความเสี่ยงตามกลุ่มอายุ</h3>
+                <div class="graph-container">
+                    <canvas id="ageRiskDistributionChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- กราฟของผู้ที่ไม่มีความเสี่ยง -->
+        <div class="graph-section">
+            <div class="graph-card">
+                <h3>จำนวนของผู้ที่ไม่มีความเสี่ยงตามกลุ่มอายุ</h3>
+                <div class="graph-container">
+                    <canvas id="ageNoRiskDistributionChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $('#patientModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // ปุ่มที่ถูกคลิก
+            var name = button.data('name');
+            var address = button.data('address');
+            var phone = button.data('phone');
+            var outcome = button.data('outcome');
+            var age = button.data('age');
+            var gender = button.data('gender');
+            var bmi = button.data('bmi');
+            var glucose = button.data('glucose');
+            var bloodPressure = button.data('bloodpressure');
+            var skinThickness = button.data('skinthickness');
+            var pregnancies = button.data('pregnancies');
+            var insulin = button.data('insulin');
+            var dpf = button.data('dpf');
+
+              // Categorize based on the values
+                    function categorizeBMI(bmi) {
+            if (bmi < 0) return "น้ำหนักต่ำกว่าเกณฑ์ <span class='text-danger'>(ต่ำกว่าเกณฑ์)</span>";
+            else if (bmi < 1) return "ปกติ";
+            else if (bmi < 2) return "น้ำหนักเกิน <span class='text-danger'>(สูงกว่าเกณฑ์)</span>";
+            else if (bmi < 3) return "โรคอ้วนระดับ 1 <span class='text-danger'>(สูงกว่าเกณฑ์)</span>";
+            else if (bmi < 4) return "โรคอ้วนระดับ 2 <span class='text-danger'>(สูงกว่าเกณฑ์)</span>";
+            else return "โรคอ้วนระดับ 3 <span class='text-danger'>(สูงมากกว่าเกณฑ์)</span>";
+        }
+
+        function categorizeGlucose(glucose) {
+            if (glucose < 0) return "น้ำตาลต่ำ <span class='text-danger'>(ต่ำกว่าเกณฑ์)</span>";
+            else if (glucose < 1) return "ปกติ";
+            else if (glucose < 2) return "ระดับก่อนเบาหวาน <span class='text-danger'>(สูงกว่าเกณฑ์)</span>";
+            else return "มีความเสี่ยงเบาหวาน <span class='text-danger'>(สูงมากกว่าเกณฑ์)</span>";
+        }
+
+        function categorizeBloodPressure(bloodPressure) {
+            if (bloodPressure < 0) return "ความดันต่ำ <span class='text-danger'>(ต่ำกว่าเกณฑ์)</span>";
+            else if (bloodPressure < 1) return "ปกติ";
+            else if (bloodPressure < 2) return "มีความเสี่ยง <span class='text-danger'>(สูงกว่าเกณฑ์)</span>";
+            else if (bloodPressure < 3) return "ค่าความดันโลหิตระดับที่1 <span class='text-danger'>(สูงูกว่าเกณฑ์)</span>";
+            else if (bloodPressure < 4) return "ค่าความดันโลหิตระดับที่2 <span class='text-danger'>(ูสูงกว่าเกณฑ์)</span>";
+            else return "ค่าระดับวิกฤต <span class='text-danger'>(ูสูงกว่าว่าเกณฑ์)</span>";
+        }
+
+        function categorizeSkinThickness(skinThickness) {
+            if (skinThickness < 0) return "ต่ำ <span class='text-danger'>(ต่ำ)</span>";
+            else if (skinThickness < 1) return "ปกติ";
+            else if (skinThickness < 2) return "สะสมไขมันมาก <span class='text-danger'>(ูสูงกว่าเกณฑ์)</span>";
+            else return "เสี่ยงต่อโรคอ้วน <span class='text-danger'>(สูงมากกว่าเกณฑ์)</span>";
+        }
+
+        function categorizePregnancies(pregnancies) {
+            if (pregnancies <= 0) return "ความเสี่ยงต่ำ";
+            else if (pregnancies <= 1) return "ความเสี่ยงปานกลาง";
+            else return "ความเสี่ยงสูง <span class='text-danger'>(ูสูงกว่าเกณฑ์)</span>";
+        }
+
+        function categorizeAge(age) {
+            if (age <= 0) return "เด็ก";
+            else if (age <= 1) return "วัยรุ่น";
+            else if (age <= 2) return "วัยหนุ่มสาว";
+            else if (age <= 3) return "วัยกลางคน";
+            else return "วัยชรา";
+        }
+
+        function categorizeInsulin(insulin) {
+            if (insulin <= 0) return "ไม่มีการผลิตอินซูลิน <span class='text-danger'>(ต่ำกว่าเกณฑ์)</span>";
+            else if (insulin < 1) return "ปกติ";
+            else if (insulin < 2) return "มีความเสี่ยง <span class='text-danger'>(สูงกว่าเกณฑ์)</span>";
+            else return "มีความเสี่ยงสูง <span class='text-danger'>(สูงมากกว่าเกณฑ์)</span>";
+        }
+
+        function categorizeDPF(dpf) {
+            if (dpf <= 0) return "ต่ำ <span class='text-danger'>(ต่ำกว่าเกณฑ์)</span>";
+            else if (dpf < 1) return "ปกติ";
+            else return "เสี่ยงเบาหวาน <span class='text-danger'>(สูงมากกว่าเกณฑ์)</span>";
+        }
+
+        $('#modalName').html(name);
+        $('#modalAddress').html(address);
+        $('#modalPhone').html(phone);
+        $('#modalOutcome').html(outcome == 1 ? 'มีความเสี่ยง <span class="text-danger">(สูง)</span>' : 'ไม่เสี่ยง');
+        $('#modalAge').text(categorizeAge(age));
+        $('#modalGender').html(gender);
+        $('#modalBMI').html(categorizeBMI(bmi));
+        $('#modalGlucose').html(categorizeGlucose(glucose));
+        $('#modalBloodPressure').html(categorizeBloodPressure(bloodPressure));
+        $('#modalSkinThickness').html(categorizeSkinThickness(skinThickness));
+        $('#modalPregnancies').html(categorizePregnancies(pregnancies));
+        $('#modalInsulin').html(categorizeInsulin(insulin));
+        $('#modalDPF').html(categorizeDPF(dpf));
+    });
+
+        // เมื่อโหลดหน้าเสร็จให้สร้างกราฟ
+        var bmiData = {{ bmi_data|safe }};
+    var glucoseData = {{ glucose_data|safe }};
+    var ageRiskData = {{ age_risk_data|safe }};
+    var ageNoRiskData = {{ age_no_risk_data|safe }};
+
+     var ctxAgeRisk = document.getElementById('ageRiskDistributionChart').getContext('2d');
+        var ageRiskChart = new Chart(ctxAgeRisk, {
+            type: 'pie',
+            data: {
+                labels: ['Children', 'Adolescents', 'Young Adult', 'Middle-aged Adult', 'Older Adult'],
+                datasets: [{
+                    label: 'ผู้มีความเสี่ยง',
+                    data: ageRiskData, // ข้อมูลของผู้ที่มีความเสี่ยง
+                    backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(255, 159, 64, 0.6)', 'rgba(255, 205, 86, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(255, 159, 64, 1)', 'rgba(255, 205, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                var label = tooltipItem.label;
+                                var value = tooltipItem.raw;
+                                return label + ': ' + value + ' คน';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // สร้างกราฟ Pie สำหรับผู้ที่ไม่มีความเสี่ยง
+        var ctxAgeNoRisk = document.getElementById('ageNoRiskDistributionChart').getContext('2d');
+        var ageNoRiskChart = new Chart(ctxAgeNoRisk, {
+            type: 'pie',
+            data: {
+                labels: ['Children', 'Adolescents', 'Young Adult', 'Middle-aged Adult', 'Older Adult'],
+                datasets: [{
+                    label: 'ผู้ที่ไม่มีความเสี่ยง',
+                    data: ageNoRiskData, // ข้อมูลของผู้ที่ไม่มีความเสี่ยง
+                    backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(255, 159, 64, 0.6)', 'rgba(255, 205, 86, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(255, 159, 64, 1)', 'rgba(255, 205, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                var label = tooltipItem.label;
+                                var value = tooltipItem.raw;
+                                return label + ': ' + value + ' คน';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
+{% endblock %}
