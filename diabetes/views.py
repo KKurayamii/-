@@ -536,7 +536,7 @@ def edit_article(request, article_id):
         form = ArticlesForm(request.POST, request.FILES, instance=article)
         if form.is_valid():
             form.save()
-            return redirect('articles')
+            return redirect('articles_admin')
     else:
         form = ArticlesForm(instance=article)
 
