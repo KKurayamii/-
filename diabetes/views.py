@@ -549,7 +549,7 @@ def delete_article(request, article_id):
     article = get_object_or_404(Articles, id=article_id)
     if request.method == 'POST':
         article.delete()
-        return redirect('articles_list')
+        return redirect('articles_admin')
     return render(request, 'delete_article.html', {'article': article})
 
 
