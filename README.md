@@ -9,3 +9,9 @@ pip install apscheduler
 pip install geopy
 
 pip install -U scikit-learn==1.6.1
+
+-------------------------------------------------------------------
+
+admin account
+user : 123456
+password : 123456
