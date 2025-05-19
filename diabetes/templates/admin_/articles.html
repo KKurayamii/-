@@ -130,7 +130,7 @@
                             <a href="{% url 'view_article_admin' article.id %}" class="btn btn-primary btn-sm">อ่านเพิ่มเติม</a>
 
                             {% if is_admin or is_medical_staff %}
-                                <a href="{% url 'edit_article' article.id %}" class="btn btn-warning btn-sm">แก้ไข</a>
+                                <a href="{% url 'edit_article_admin' article.id %}" class="btn btn-warning btn-sm">แก้ไข</a>
                             {% endif %}
 
                             {% if is_admin %}
