@@ -102,13 +102,13 @@ def feature_importance_view(request):
     feature_importance = list(zip(feature_names, importances))
     feature_importance.sort(key=lambda x: x[1], reverse=True)
 
-    # เลือก Top 5 Features
+    # เลือก Top 8 Features
     top_features = feature_importance[:8]
     top_names, top_values = zip(*top_features)
 
     # สร้างกราฟ
     plt.figure(figsize=(10, 5))
-    sns.barplot(x=top_values, y=top_names, palette='viridis')
+    sns.barplot(x=list(top_values), y=list(top_names), palette='viridis')
     plt.xlabel("Feature Importance")
     plt.ylabel("Feature Input Data")
 
