@@ -1656,7 +1656,7 @@ def add_articleadmin(request):
             article = form.save(commit=False)  # สร้าง object แต่ยังไม่บันทึกในฐานข้อมูล
             article.author = request.user      # กำหนดผู้เขียนเป็นผู้ใช้ที่ล็อกอินอยู่
             article.save()                     # บันทึกบทความในฐานข้อมูล
-            return redirect('articles')        # กลับไปยังหน้ารายการบทความ
+            return redirect('articles_admin')        # กลับไปยังหน้ารายการบทความ
     else:
         form = ArticlesForm()
     return render(request, 'admin_/add_article.html', {'form': form})
